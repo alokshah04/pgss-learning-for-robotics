@@ -152,10 +152,31 @@
       color: var(--muted); margin-left: 6px; align-self: flex-end; padding-bottom: 2px;
     }
 
-    /* ── Image placeholder ── */
-    .img-placeholder {
-      background: #f4f4f4; border: 1px dashed var(--border); border-radius: 8px;
-      padding: 32px; text-align: center; color: var(--muted); font-size: 14px; margin: 20px 0;
+    /* ── Robot image grid ── */
+    .robot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .robot-grid figure {
+      margin: 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--card-bg);
+    }
+    .robot-grid img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      display: block;
+    }
+    .robot-grid figcaption {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 8px;
+      line-height: 1.4;
     }
 
     /* ── Canvas visuals ── */
@@ -240,8 +261,8 @@
 
 <main>
   <div class="resource-bar">
-    <a class="resource-btn" href="#" title="Coming soon">Slides (TBD)</a>
-    <a class="resource-btn" href="#" title="Coming soon">Exercises (TBD)</a>
+    <a class="resource-btn" href="robotics_week1.pdf" target="_blank">Slides (PDF)</a>
+    <a class="resource-btn" href="week1-exercises.html">Exercises</a>
     <a class="resource-btn" href="#" title="Coming soon">Notebook (TBD)</a>
   </div>
 
@@ -268,7 +289,24 @@
     <h2>A Brief History of Robotics</h2>
     <p><strong>What is a robot?</strong> Informally, a robot is a machine that can <em>sense</em> the world, <em>make decisions</em>, and <em>act</em> on the world.</p>
     <p>The word <span class="term">"robot"<span class="tip">From Czech <em>robota</em>, meaning forced labor. Popularized by Karel Čapek in his 1920 play R.U.R.</span></span> comes from the Czech word <em>robota</em>, meaning forced labor. It was popularized by the Czech writer Karel Čapek in his 1920 play <em>R.U.R.</em> Later, science fiction writers such as Isaac Asimov helped shape how people imagined robots.</p>
-    <div class="img-placeholder">[Images of robots — to be inserted]</div>
+    <div class="robot-grid">
+      <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Baxter_robot_at_the_Manufacturers%27_Museum.jpg/320px-Baxter_robot_at_the_Manufacturers%27_Museum.jpg" alt="Baxter industrial robot arm" loading="lazy">
+        <figcaption>Baxter — industrial robot arm</figcaption>
+      </figure>
+      <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Nasa_perseverance_rover.jpg/320px-Nasa_perseverance_rover.jpg" alt="NASA Perseverance Mars Rover" loading="lazy">
+        <figcaption>Perseverance — NASA Mars Rover</figcaption>
+      </figure>
+      <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Robonaut2_-_from_the_front.jpg/320px-Robonaut2_-_from_the_front.jpg" alt="Robonaut 2 on ISS" loading="lazy">
+        <figcaption>Robonaut 2 — NASA humanoid</figcaption>
+      </figure>
+      <figure>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/GR-1_Humanoid_Robot.jpg/320px-GR-1_Humanoid_Robot.jpg" alt="GR-1 humanoid robot" loading="lazy">
+        <figcaption>GR-1 — Fourier humanoid robot</figcaption>
+      </figure>
+    </div>
 
     <h3>The Classical Robotics Pipeline</h3>
     <p>Robotics operates in a revolving loop with three components:</p>
@@ -724,454 +762,16 @@
     <!-- ═══════ EXERCISES ═══════ -->
     <h2>Exercises</h2>
 
-    <!-- Solution toggle -->
-    <!-- <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px;padding:14px 18px;background:var(--key-bg);border:1px solid var(--key-border);border-radius:8px;">
-      <span style="font-size:14px;font-weight:600;color:#a16207;">Show Solutions</span>
-      <label class="sol-toggle" title="Toggle solutions">
-        <input type="checkbox" id="solToggle" onchange="toggleSolutions(this.checked)">
-        <span class="sol-slider"></span>
-      </label>
-      <span style="font-size:13px;color:var(--muted);" id="solLabel">Solutions hidden</span>
-    </div> -->
+    <p style="margin-bottom:16px;">22 exercises split into two parts — basic notation checks and deeper ML applications.</p>
 
-    <p style="margin-bottom:10px;">These exercises are split into two groups.</p>
-    <p style="margin-bottom:10px;"><strong>Part I — Check for Understanding</strong> covers basic notation and ideas from this week.</p>
-    <p style="margin-bottom:28px;"><strong>Part II — Applications to Machine Learning</strong> shows how this week's math appears in real ML and reinforcement learning.</p>
-
-    <!-- ── PART I ── -->
-    <h2>Part I: Check for Understanding</h2>
-
-    <!-- Ex 1 -->
-    <div class="ex-block">
-      <h3>Exercise 1: Functions</h3>
-      <p>Let $f(x) = x^2 + 2x + 1$. Compute:</p>
-      <ol>
-        <li>$f(0)$</li>
-        <li>$f(1)$</li>
-        <li>$f(2)$</li>
-        <li>$f(-1)$</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$f(0) = 0 + 0 + 1 = 1$</li>
-            <li>$f(1) = 1 + 2 + 1 = 4$</li>
-            <li>$f(2) = 4 + 4 + 1 = 9$</li>
-            <li>$f(-1) = 1 - 2 + 1 = 0$</li>
-          </ol>
-        </div>
+    <a href="week1-exercises.html" style="display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;background:var(--def-bg);border:1px solid var(--def-border);border-radius:10px;text-decoration:none;color:var(--text);transition:background .12s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='var(--def-bg)'">
+      <div>
+        <div style="font-size:15px;font-weight:700;color:var(--accent);margin-bottom:4px;">Week 1 Exercises →</div>
+        <div style="font-size:13px;color:var(--muted);">Part I: Check for Understanding (Ex 1–15) &nbsp;·&nbsp; Part II: Applications to ML (Ex 16–22)</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px;">Solutions toggle included on the exercise page.</div>
       </div>
-    </div>
-
-    <!-- Ex 2 -->
-    <div class="ex-block">
-      <h3>Exercise 2: Derivatives</h3>
-      <p>For each function, compute the derivative.</p>
-      <ol>
-        <li>$f(x) = x^2$</li>
-        <li>$f(x) = 3x^2$</li>
-        <li>$f(x) = x^2 + 5x$</li>
-        <li>$f(x) = (x-4)^2$</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$f'(x) = 2x$</li>
-            <li>$f'(x) = 6x$</li>
-            <li>$f'(x) = 2x + 5$</li>
-            <li>$f'(x) = 2(x-4)$</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 3 -->
-    <div class="ex-block">
-      <h3>Exercise 3: Loss Minimization</h3>
-      <p>Let $L(\theta) = (\theta - 5)^2$. Answer:</p>
-      <ol>
-        <li>What value of $\theta$ minimizes the loss?</li>
-        <li>What is $L(0)$? $L(5)$? $L(10)$?</li>
-        <li>What is $L'(\theta)$? What is $L'(0)$?</li>
-        <li>If $\theta = 0$, should gradient descent increase or decrease $\theta$?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$\theta = 5$ minimizes the loss (it equals $0$ there).</li>
-            <li>$L(0) = 25$, $L(5) = 0$, $L(10) = 25$.</li>
-            <li>$L'(\theta) = 2(\theta-5)$, so $L'(0) = -10$.</li>
-            <li>Since $L'(0) < 0$, the update $\theta \leftarrow \theta - \alpha L'(\theta)$ subtracts a negative number — it <strong>increases</strong> $\theta$ toward $5$.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 4 -->
-    <div class="ex-block">
-      <h3>Exercise 4: One Step of Gradient Descent</h3>
-      <p>Let $L(\theta) = (\theta-3)^2$, so $L'(\theta) = 2(\theta-3)$. Start at $\theta = 0$, learning rate $\alpha = 0.1$.</p>
-      <ol>
-        <li>What is $L'(0)$?</li>
-        <li>What is the new $\theta$ after one update?</li>
-        <li>Did $\theta$ move closer to $3$?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$L'(0) = 2(0-3) = -6$.</li>
-            <li>$\theta \leftarrow 0 - 0.1(-6) = 0.6$.</li>
-            <li>Yes — moved from $0$ to $0.6$, closer to $3$.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 5 -->
-    <div class="ex-block">
-      <h3>Exercise 5: Vector Addition</h3>
-      <p>Compute: $\begin{bmatrix}1\\4\end{bmatrix} + \begin{bmatrix}3\\-2\end{bmatrix}$</p>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <div class="math-block">$$\begin{bmatrix}1\\4\end{bmatrix} + \begin{bmatrix}3\\-2\end{bmatrix} = \begin{bmatrix}4\\2\end{bmatrix}$$</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 6 -->
-    <div class="ex-block">
-      <h3>Exercise 6: Robot Position Update</h3>
-      <p>A robot is at $p = \begin{bmatrix}2\\5\end{bmatrix}$ and moves by $\Delta p = \begin{bmatrix}3\\-1\end{bmatrix}$. What is the new position?</p>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <div class="math-block">$$p + \Delta p = \begin{bmatrix}2\\5\end{bmatrix} + \begin{bmatrix}3\\-1\end{bmatrix} = \begin{bmatrix}5\\4\end{bmatrix}$$</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 7 -->
-    <div class="ex-block">
-      <h3>Exercise 7: Dot Product</h3>
-      <p>Compute: $\begin{bmatrix}2\\3\end{bmatrix}^\top \begin{bmatrix}4\\-1\end{bmatrix}$</p>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <div class="math-block">$$2(4) + 3(-1) = 8 - 3 = 5$$</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 8 -->
-    <div class="ex-block">
-      <h3>Exercise 8: Linear Model Prediction</h3>
-      <p>Let $\hat{y} = w^\top x + b$ with $w = \begin{bmatrix}2\\-1\end{bmatrix}$, $x = \begin{bmatrix}3\\4\end{bmatrix}$, $b = 5$. Compute $\hat{y}$.</p>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <p>$w^\top x = 2(3) + (-1)(4) = 6 - 4 = 2$, then $\hat{y} = 2 + 5 = 7$.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 9 -->
-    <div class="ex-block">
-      <h3>Exercise 9: Norm</h3>
-      <p>Compute $\left\|\begin{bmatrix}6\\8\end{bmatrix}\right\|_2$.</p>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <div class="math-block">$$\sqrt{6^2 + 8^2} = \sqrt{36+64} = \sqrt{100} = 10$$</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 10 -->
-    <div class="ex-block">
-      <h3>Exercise 10: Probability Distribution</h3>
-      <p>A random variable $X$ takes values $0, 1, 2$ with $P(X=0)=0.2$, $P(X=1)=0.5$, $P(X=2)=0.3$.</p>
-      <ol>
-        <li>Do these probabilities add to $1$?</li>
-        <li>Which outcome is most likely?</li>
-        <li>Which is least likely?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>Yes: $0.2 + 0.5 + 0.3 = 1$.</li>
-            <li>$X = 1$ (probability $0.5$).</li>
-            <li>$X = 0$ (probability $0.2$).</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 11 -->
-    <div class="ex-block">
-      <h3>Exercise 11: Expected Value</h3>
-      <p>Using the distribution from Exercise 10, compute $\mathbb{E}[X]$.</p>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <div class="math-block">$$\mathbb{E}[X] = 0(0.2) + 1(0.5) + 2(0.3) = 0 + 0.5 + 0.6 = 1.1$$</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 12 -->
-    <div class="ex-block">
-      <h3>Exercise 12: Expected Reward</h3>
-      <p>A robot gets reward $10$ on success and $0$ on failure, with success probability $0.6$.</p>
-      <ol>
-        <li>Expected reward?</li>
-        <li>What if success probability is $0.9$?</li>
-        <li>What if success reward is $20$ but probability stays $0.6$?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$10(0.6) + 0(0.4) = 6$.</li>
-            <li>$10(0.9) + 0(0.1) = 9$.</li>
-            <li>$20(0.6) + 0(0.4) = 12$.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 13 -->
-    <div class="ex-block">
-      <h3>Exercise 13: Sample Average</h3>
-      <p>A robot runs 6 trials with rewards $1, 1, 0, 1, 0, 1$.</p>
-      <ol>
-        <li>What is the sample average reward?</li>
-        <li>What does this estimate?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li><div class="math-block">$$\frac{1+1+0+1+0+1}{6} = \frac{4}{6} = \frac{2}{3} \approx 0.667$$</div></li>
-            <li>It estimates the robot's expected reward $\mathbb{E}[R]$.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 14 -->
-    <div class="ex-block">
-      <h3>Exercise 14: Dataset Notation</h3>
-      <p>Let $\mathcal{D} = \{(x_i, y_i)\}_{i=1}^{100}$.</p>
-      <ol>
-        <li>How many examples?</li>
-        <li>What does $x_i$ represent?</li>
-        <li>What does $y_i$ represent?</li>
-        <li>What is the goal of supervised learning?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>100 examples.</li>
-            <li>$x_i$ is the input for example $i$.</li>
-            <li>$y_i$ is the label/target for example $i$.</li>
-            <li>To find $f_\theta$ such that $f_\theta(x_i) \approx y_i$ — and generalize to new examples.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 15 -->
-    <div class="ex-block">
-      <h3>Exercise 15: Regression vs. Classification</h3>
-      <p>For each task, say whether it is regression or classification.</p>
-      <ol>
-        <li>Predicting house price.</li>
-        <li>Predicting cat vs. dog in an image.</li>
-        <li>Predicting tomorrow's temperature.</li>
-        <li>Predicting whether a robot grasp succeeds or fails.</li>
-        <li>Predicting the next motor command as a real number.</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>Regression (price is a number).</li>
-            <li>Classification (discrete category).</li>
-            <li>Regression (temperature is a number).</li>
-            <li>Classification (success/failure is discrete).</li>
-            <li>Regression (motor command is a real number).</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- ── PART II ── -->
-    <h2>Part II: Applications to Machine Learning</h2>
-
-    <!-- Ex 16 -->
-    <div class="ex-block">
-      <h3>Exercise 16: Gradient of a Log Probability</h3>
-      <p>In ML and RL we often encounter $\nabla_\theta \log f_\theta(x)$, where $f_\theta(x) > 0$.</p>
-      <ol>
-        <li>Using the chain rule, compute $\nabla_\theta \log f_\theta(x)$.</li>
-        <li>Fill in: $\nabla_\theta \log f_\theta(x) = \dfrac{?}{?}$</li>
-        <li>Why is this identity useful when $f_\theta(x)$ is a probability?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>By the chain rule: $\nabla_\theta \log f_\theta(x) = \dfrac{1}{f_\theta(x)}\nabla_\theta f_\theta(x)$.</li>
-            <li><div class="math-block">$$\nabla_\theta \log f_\theta(x) = \frac{\nabla_\theta f_\theta(x)}{f_\theta(x)}$$</div></li>
-            <li>It lets us differentiate through probabilities without numerical underflow, and produces cleaner expressions. This identity is fundamental to policy gradient methods, where we compute $\nabla_\theta \log \pi_\theta(a \mid s)$.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 17 -->
-    <div class="ex-block">
-      <h3>Exercise 17: Linear Regression from Maximum Likelihood</h3>
-      <p>Suppose data is generated as $y_i = w^\top x_i + \epsilon_i$ where $\epsilon_i \sim \mathcal{N}(0, \sigma^2)$, so $y_i \mid x_i, w \sim \mathcal{N}(w^\top x_i, \sigma^2)$.</p>
-      <ol>
-        <li>What does mean-zero noise mean intuitively?</li>
-        <li>If $\sigma^2$ is small, do data points lie close to or far from the line?</li>
-        <li>The density is $p(y_i \mid x_i, w) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\!\left(-\frac{(y_i - w^\top x_i)^2}{2\sigma^2}\right)$. Write the likelihood of the full IID dataset as a product.</li>
-        <li>Take the log-likelihood. Ignore constants that don't depend on $w$.</li>
-        <li>Show that maximizing log-likelihood is equivalent to minimizing $\sum_i (y_i - w^\top x_i)^2$.</li>
-        <li>When should linear regression work well? When might it fail?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>The noise is not systematically biased in either direction — it averages out to $0$ over many samples.</li>
-            <li>Close to the line.</li>
-            <li><div class="math-block">$$p(y_1,\ldots,y_n \mid x_1,\ldots,x_n,w) = \prod_{i=1}^n p(y_i \mid x_i, w)$$</div></li>
-            <li>The log-likelihood is $\sum_i \left[\log\frac{1}{\sqrt{2\pi\sigma^2}} - \frac{(y_i - w^\top x_i)^2}{2\sigma^2}\right]$. Dropping the constant term, only $-\frac{1}{2\sigma^2}\sum_i(y_i - w^\top x_i)^2$ depends on $w$.</li>
-            <li>Maximizing the log-likelihood means maximizing $-\frac{1}{2\sigma^2}\sum_i(y_i - w^\top x_i)^2$. Since $-\frac{1}{2\sigma^2} < 0$, this is equivalent to <em>minimizing</em> $\sum_i(y_i - w^\top x_i)^2$.</li>
-            <li><strong>Works well when:</strong> true relationship is approximately linear; noise is mean-zero and small; data is approximately IID; train and test distributions match. <strong>Fails when:</strong> the relationship is highly nonlinear; noise is biased; train/test distributions differ significantly.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 18 -->
-    <div class="ex-block">
-      <h3>Exercise 18: Understanding Softmax</h3>
-      <p>A model outputs logits $z = \begin{bmatrix}2\\1\\0\end{bmatrix}$. Use $e^2 \approx 7.39$, $e^1 \approx 2.72$, $e^0 = 1$.</p>
-      <ol>
-        <li>Why can't we interpret raw logits as probabilities?</li>
-        <li>Compute $e^2, e^1, e^0$ and the denominator $\sum_j e^{z_j}$.</li>
-        <li>Compute the three softmax probabilities.</li>
-        <li>Verify they sum to $1$.</li>
-        <li>Using $\frac{\partial s_i}{\partial z_k} = s_i(\mathbf{1}_{i=k} - s_k)$, compute $\frac{\partial s_1}{\partial z_1}$ and $\frac{\partial s_1}{\partial z_2}$.</li>
-        <li>What is the main intuition of the softmax gradient?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>Logits can be negative, exceed $1$, and don't sum to $1$.</li>
-            <li>Denominator: $7.39 + 2.72 + 1 = 11.11$.</li>
-            <li>$s_1 \approx 0.665$, $s_2 \approx 0.245$, $s_3 \approx 0.090$.</li>
-            <li>$0.665 + 0.245 + 0.090 = 1.000$ ✓</li>
-            <li>$\frac{\partial s_1}{\partial z_1} = s_1(1-s_1) \approx 0.665(0.335) \approx 0.223$. $\quad\frac{\partial s_1}{\partial z_2} = -s_1 s_2 \approx -0.665(0.245) \approx -0.163$.</li>
-            <li>Increasing one logit raises that class's probability and lowers all others'. Softmax couples classes together — the gradient is expressed in terms of softmax probabilities themselves, making it convenient for ML.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 19 -->
-    <div class="ex-block">
-      <h3>Exercise 19: Softmax, Overflow, and Log-Sum-Exp</h3>
-      <p>Softmax can overflow for large logits (e.g. $z = \begin{bmatrix}1000\\1001\\1002\end{bmatrix}$). The trick: softmax is shift-invariant — subtracting a constant $c$ from all logits leaves it unchanged.</p>
-
-      <h4>Part A — Overflow fix</h4>
-      <ol>
-        <li>Choose $c = \max_i z_i$. What is $c$?</li>
-        <li>What is $z - c$?</li>
-        <li>Why is this safer?</li>
-      </ol>
-
-      <h4>Part B — Log-Sum-Exp</h4>
-      <p>For the same $z$, use $e^{-2}\approx 0.135$, $e^{-1}\approx 0.368$, $e^0=1$ to estimate $\log\sum_j e^{z_j}$ using the stable formula $c + \log\sum_j e^{z_j-c}$.</p>
-
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <h4>Part A</h4>
-          <ol>
-            <li>$c = 1002$.</li>
-            <li>$z - c = \begin{bmatrix}-2\\-1\\0\end{bmatrix}$.</li>
-            <li>The largest exponent is now $e^0=1$ instead of $e^{1002}$, which is safe for floating-point computation.</li>
-          </ol>
-          <h4>Part B</h4>
-          <div class="math-block">$$\log(e^{1000}+e^{1001}+e^{1002}) = 1002 + \log(e^{-2}+e^{-1}+e^0)$$</div>
-          <div class="math-block">$$\approx 1002 + \log(0.135+0.368+1) = 1002 + \log(1.503) \approx 1002 + 0.407 \approx 1002.41$$</div>
-          <p>The key point: we avoided computing $e^{1002}$ directly.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 20 -->
-    <div class="ex-block">
-      <h3>Exercise 20: The Markov Assumption and Trajectory Probabilities</h3>
-      <p>A trajectory is $\tau = (s_0,a_0,s_1,a_1,\ldots,s_T)$. The <strong>Markov assumption</strong> states $P(s_{t+1}\mid s_0,a_0,\ldots,s_t,a_t) = P(s_{t+1}\mid s_t,a_t)$.</p>
-      <ol>
-        <li>In words, what does the Markov assumption mean?</li>
-        <li>Write $P(s_0,a_0,s_1,a_1,s_2)$ using the chain rule.</li>
-        <li>Simplify using the Markov assumption and policy notation $\pi(a_t\mid s_t)$.</li>
-        <li>Write the general trajectory probability $P(\tau)$.</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>The future depends only on the present state and action, not the full history.</li>
-            <li><div class="math-block">$$P(s_0)P(a_0\mid s_0)P(s_1\mid s_0,a_0)P(a_1\mid s_0,a_0,s_1)P(s_2\mid s_0,a_0,s_1,a_1)$$</div></li>
-            <li><div class="math-block">$$p(s_0)\,\pi(a_0\mid s_0)\,P(s_1\mid s_0,a_0)\,\pi(a_1\mid s_1)\,P(s_2\mid s_1,a_1)$$</div></li>
-            <li><div class="math-block">$$P(\tau) = p(s_0)\prod_{t=0}^{T-1}\pi(a_t\mid s_t)\,P(s_{t+1}\mid s_t,a_t)$$</div><p>This factorization is the central mathematical object in RL.</p></li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 21 -->
-    <div class="ex-block">
-      <h3>Exercise 21: Importance Sampling</h3>
-      <p>We want $\mathbb{E}_{x\sim p}[f(x)]$ but have samples from $q$. By multiplying and dividing by $q(x)$:</p>
-      <div class="math-block">$$\mathbb{E}_{x\sim p}[f(x)] = \mathbb{E}_{x\sim q}\!\left[\frac{p(x)}{q(x)}f(x)\right]$$</div>
-      <p>Let $p(A)=0.8$, $p(B)=0.2$, $q(A)=q(B)=0.5$, $f(A)=10$, $f(B)=0$.</p>
-      <ol>
-        <li>Compute $\mathbb{E}_{x\sim p}[f(x)]$ directly.</li>
-        <li>Compute the importance weights $p(A)/q(A)$ and $p(B)/q(B)$.</li>
-        <li>Compute $\mathbb{E}_{x\sim q}[p(x)/q(x)\cdot f(x)]$.</li>
-        <li>Do the two answers match?</li>
-        <li>Why is this useful?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$0.8(10)+0.2(0) = 8$.</li>
-            <li>$p(A)/q(A) = 1.6$, $p(B)/q(B) = 0.4$.</li>
-            <li>$0.5(1.6)(10)+0.5(0.4)(0) = 8+0 = 8$.</li>
-            <li>Yes — both equal $8$.</li>
-            <li>In RL we often have trajectories from an old policy $q$ but want to evaluate a new policy $p$. Importance sampling lets us reweight old samples. The trick is powerful but can be unstable if $p(x)/q(x)$ becomes very large.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-
-    <!-- Ex 22 -->
-    <div class="ex-block">
-      <h3>Exercise 22: Connecting Softmax to Policies</h3>
-      <p>A robot has three actions (left, right, forward). A network outputs logits $z = \begin{bmatrix}1\\3\\2\end{bmatrix}$. Use $e^1\approx2.72$, $e^2\approx7.39$, $e^3\approx20.09$.</p>
-      <ol>
-        <li>Compute the softmax denominator.</li>
-        <li>Compute $\pi(\text{left}\mid s)$, $\pi(\text{right}\mid s)$, $\pi(\text{forward}\mid s)$.</li>
-        <li>Which action is most likely?</li>
-        <li>Why prefer a stochastic policy over always choosing the most likely action?</li>
-      </ol>
-      <div class="solution">
-        <div class="callout callout-note"><div class="callout-label">Solution</div>
-          <ol>
-            <li>$2.72+20.09+7.39 = 30.20$.</li>
-            <li>$\pi(\text{left})\approx 0.090$, $\pi(\text{right})\approx 0.665$, $\pi(\text{forward})\approx 0.245$.</li>
-            <li>Right (probability $\approx 0.665$).</li>
-            <li>A stochastic policy enables <em>exploration</em> — the robot occasionally tries other actions and may discover better ones. Always being greedy can trap the agent in a suboptimal behavior.</li>
-          </ol>
-        </div>
-      </div>
-    </div>
+      <div style="font-size:28px;color:var(--accent);flex-shrink:0;">&#x2197;</div>
+    </a>
 
   </div><!-- end .notes -->
 </main>
