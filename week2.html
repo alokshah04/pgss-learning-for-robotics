@@ -7,12 +7,15 @@
 
   <script>
     window.MathJax = {
-      tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] },
-      options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea'] }
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        packages: {'[+]': ['ams']}
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea'] }
     };
   </script>
   <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,124 +27,126 @@
       --accent: #2563eb;
       --border: #e0e0e0;
       --card-bg: #fff;
+      --def-bg: #eff6ff;   --def-border: #93c5fd;
+      --key-bg: #fefce8;   --key-border: #fde047;
+      --warn-bg: #fff7ed;  --warn-border: #fdba74;
+      --note-bg: #f0fdf4;  --note-border: #86efac;
     }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.7;
-      font-size: 16px;
+      background: var(--bg); color: var(--text); line-height: 1.75; font-size: 16px;
     }
 
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    header, main, footer {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 0 24px;
-    }
+    header, main, footer { max-width: 740px; margin: 0 auto; padding: 0 24px; }
 
-    header {
-      padding-top: 48px;
-      padding-bottom: 36px;
-      border-bottom: 1px solid var(--border);
-    }
+    header { padding-top: 48px; padding-bottom: 36px; border-bottom: 1px solid var(--border); }
 
     .breadcrumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
     .breadcrumb a { color: var(--muted); }
     .breadcrumb a:hover { color: var(--accent); }
 
     .week-tag {
-      display: inline-block;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 8px;
+      display: inline-block; font-size: 12px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px;
     }
 
-    h1 {
-      font-size: clamp(22px, 4vw, 32px);
-      font-weight: 700;
-      letter-spacing: -.02em;
-      line-height: 1.25;
-    }
+    h1 { font-size: clamp(22px,4vw,32px); font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
 
     main { padding-top: 48px; padding-bottom: 80px; }
 
     footer {
-      padding-top: 32px;
-      padding-bottom: 48px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding-top: 32px; padding-bottom: 48px; border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 14px; display: flex; justify-content: space-between; align-items: center;
     }
 
-    .md-body h2 {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -.01em;
-      margin-top: 48px;
-      margin-bottom: 12px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .md-body h3 { font-size: 16px; font-weight: 600; margin-top: 28px; margin-bottom: 8px; }
-    .md-body p { margin-bottom: 14px; }
-    .md-body ul, .md-body ol { padding-left: 20px; margin-bottom: 14px; }
-    .md-body li { margin-bottom: 4px; }
-
-    .md-body code {
-      font-family: "SF Mono", "Fira Code", monospace;
-      font-size: 13px;
-      background: #f0f0f0;
-      padding: 1px 5px;
-      border-radius: 3px;
-    }
-
-    .md-body pre {
-      background: #f4f4f4;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 16px;
-      overflow-x: auto;
-      margin-bottom: 16px;
-    }
-
-    .md-body pre code { background: none; padding: 0; font-size: 13px; }
-    .md-body blockquote { border-left: 3px solid var(--accent); margin: 0 0 14px 0; padding: 8px 16px; color: var(--muted); }
-    .md-body a { color: var(--accent); }
-    .md-body strong { font-weight: 600; }
-
-    .md-body table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 14px; }
-    .md-body th, .md-body td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
-    .md-body th { font-weight: 600; }
-
+    /* ── Resource bar ── */
     .resource-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
-
     .resource-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 500;
-      border: 1px solid var(--border);
-      background: var(--card-bg);
-      color: var(--text);
-      text-decoration: none;
-      transition: border-color .12s, color .12s;
+      display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px;
+      border-radius: 6px; font-size: 13px; font-weight: 500;
+      border: 1px solid var(--border); background: var(--card-bg); color: var(--text);
+      text-decoration: none; transition: border-color .12s, color .12s;
+    }
+    .resource-btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+
+    /* ── Headings ── */
+    .notes h2 {
+      font-size: 21px; font-weight: 700; letter-spacing: -.01em;
+      margin-top: 56px; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .notes h2:first-child { margin-top: 0; }
+    .notes h3 { font-size: 17px; font-weight: 600; margin-top: 32px; margin-bottom: 10px; color: #1e3a8a; }
+    .notes h4 {
+      font-size: 14px; font-weight: 600; margin-top: 20px; margin-bottom: 6px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .05em;
+    }
+    .notes p { margin-bottom: 16px; }
+    .notes ul, .notes ol { padding-left: 22px; margin-bottom: 16px; }
+    .notes li { margin-bottom: 6px; }
+    .notes strong { font-weight: 700; }
+    .notes em { font-style: italic; }
+    .notes hr { border: none; border-top: 1px solid var(--border); margin: 44px 0; }
+
+    /* ── Math ── */
+    .math-block { overflow-x: auto; margin: 18px 0; font-size: 1.05em; }
+
+    /* ── Callouts ── */
+    .callout { border-radius: 8px; padding: 14px 18px; margin: 20px 0; border-left: 4px solid; }
+    .callout .callout-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout p:last-child, .callout ul:last-child, .callout ol:last-child { margin-bottom: 0; }
+    .callout .math-block:last-child { margin-bottom: 0; }
+    .callout-def  { background: var(--def-bg);  border-color: var(--def-border); }
+    .callout-def  .callout-label { color: #1d4ed8; }
+    .callout-key  { background: var(--key-bg);  border-color: var(--key-border); }
+    .callout-key  .callout-label { color: #a16207; }
+    .callout-note { background: var(--note-bg); border-color: var(--note-border); }
+    .callout-note .callout-label { color: #15803d; }
+    .callout-warn { background: var(--warn-bg); border-color: var(--warn-border); }
+    .callout-warn .callout-label { color: #c2410c; }
+
+    /* ── Hover tooltips ── */
+    .term { border-bottom: 1px dashed var(--accent); cursor: help; position: relative; color: inherit; }
+    .term .tip {
+      display: none; position: absolute; bottom: calc(100% + 6px); left: 50%;
+      transform: translateX(-50%); background: #1e293b; color: #f8fafc;
+      font-size: 13px; line-height: 1.5; padding: 8px 12px; border-radius: 6px;
+      width: max-content; max-width: 260px; z-index: 10; pointer-events: none; white-space: normal;
+    }
+    .term:hover .tip { display: block; }
+
+    /* ── Algorithm/pseudocode block ── */
+    .algo {
+      background: #f8f9fa; border: 1px solid var(--border); border-radius: 8px;
+      padding: 18px 22px; margin: 20px 0; font-size: 14px;
+    }
+    .algo .algo-title {
+      font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 12px;
+    }
+    .algo pre {
+      font-family: "SF Mono", "Fira Code", monospace; font-size: 13px;
+      line-height: 1.7; white-space: pre; overflow-x: auto; margin: 0;
     }
 
-    .resource-btn:hover { border-color: var(--accent); color: var(--accent); text-decoration: none; }
+    /* ── Pipeline ── */
+    .pipeline {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 20px 0; font-size: 14px;
+    }
+    .pipeline-box {
+      background: var(--def-bg); border: 1px solid var(--def-border); border-radius: 6px;
+      padding: 6px 14px; font-weight: 600; color: #1e3a8a; white-space: nowrap;
+    }
+    .pipeline-arrow { color: var(--accent); font-size: 16px; padding: 0 2px; }
+
+    /* ── Comparison table ── */
+    .cmp-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+    .cmp-table th { background: var(--def-bg); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--def-border); }
+    .cmp-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .cmp-table tr:last-child td { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -153,58 +158,494 @@
 </header>
 
 <main>
-
   <div class="resource-bar">
     <a class="resource-btn" href="#" title="Coming soon">Slides (TBD)</a>
     <a class="resource-btn" href="#" title="Coming soon">MuJoCo Notebook (TBD)</a>
     <a class="resource-btn" href="#" title="Coming soon">Exercises (TBD)</a>
   </div>
 
-  <div class="md-body" id="content"></div>
+  <div class="notes">
 
+    <!-- ═══════ OVERVIEW ═══════ -->
+    <h2>Overview</h2>
+
+    <p>Last week we studied <strong>supervised learning</strong>. We had input-output pairs:</p>
+    <div class="math-block">$$\mathcal{D} = \{(x_i, y_i)\}_{i=1}^n$$</div>
+    <p>and we trained a model $\hat{y} = f_\theta(x)$ so that predictions are close to correct labels. In robotics, we collected expert demonstrations $(s_i, a_i)$ — state and action pairs — and trained a policy to imitate:</p>
+    <div class="math-block">$$\pi_\theta(s_i) \approx a_i$$</div>
+    <p>This is called <strong>imitation learning</strong> or <strong>behavior cloning</strong>. It is powerful, but it has limits:</p>
+    <ul>
+      <li>What if we have no expert?</li>
+      <li>What if demonstrations are too expensive to collect?</li>
+      <li>What if the robot needs to discover new behavior on its own?</li>
+      <li>What if the right action is not obvious at each step, only becoming clear after a full task?</li>
+    </ul>
+    <p>This is where <strong>reinforcement learning</strong> enters. Instead of learning from correct labels, the robot learns from <strong>reward</strong>. It tries actions, observes what happens, and gradually changes behavior to get more reward.</p>
+
+    <p>The main pipeline for this week:</p>
+    <div class="pipeline">
+      <div class="pipeline-box">Supervised Learning</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-box">MDPs</div>
+      <div class="pipeline-arrow">→</div>
+      <!-- <div class="pipeline-box">Policies</div>
+      <div class="pipeline-arrow">→</div> -->
+      <div class="pipeline-box">Policy-Based Learning</div>
+      <div class="pipeline-arrow">→</div>
+      <div class="pipeline-box">Actor-Critic</div>
+    </div>
+
+    <p>We will focus on <strong>policy-based</strong> reinforcement learning. We may cover Value-based methods (Q-learning, DQN) in Week 3.</p>
+
+    <hr>
+
+    <!-- ═══════ SL → RL ═══════ -->
+    <h2>From Supervised Learning to Reinforcement Learning</h2>
+
+    <p>Supervised learning boils down to learning</p>
+    <div class="math-block">$$x \rightarrow y$$</div>
+    <p>The model sees input $x$ and predicts label $y$. The loss is <em>immediate</em> — if the model predicts wrong, we know right away:</p>
+    <div class="math-block">$$L(\theta) = (f_\theta(x) - y)^2$$</div>
+    [or cross entropy loss if categorical data]
+    <p>In reinforcement learning the situation is different. A robot takes an action, but we may not immediately know whether that action was good. Suppose a robot is learning to walk. At $t=0$ it moves one leg slightly forward — was that good? Only if the robot eventually walks. If it falls, maybe not. But the reward may only arrive after many steps.</p>
+
+    <p>This makes RL harder than supervised learning in five ways:</p>
+    <ol>
+      <li>The robot must collect its own data.</li>
+      <li>Feedback may be significantly delayed.</li>
+      <li>The robot must explore different actions.</li>
+      <li>A single action can affect many future outcomes.</li>
+      <li>The data distribution changes as the policy changes.</li>
+    </ol>
+
+    <div class="callout callout-note">
+      <div class="callout-label">SL vs RL at a Glance</div>
+      <table class="cmp-table">
+        <tr><th></th><th>Supervised Learning</th><th>Reinforcement Learning</th></tr>
+        <tr><td><strong>Signal</strong></td><td>Labeled examples $(x_i, y_i)$</td><td>Reward $r_t$ from environment</td></tr>
+        <tr><td><strong>Feedback</strong></td><td>Immediate</td><td>Possibly delayed</td></tr>
+        <tr><td><strong>Data</strong></td><td>Fixed dataset</td><td>Collected by the agent</td></tr>
+        <tr><td><strong>Distribution</strong></td><td>Fixed</td><td>Changes with policy</td></tr>
+        <tr><td><strong>Goal</strong></td><td>$\min_\theta L(\theta)$</td><td>$\max_\theta J(\theta)$</td></tr>
+      </table>
+    </div>
+
+    <p>We need a new mathematical framework for this. That framework is the <strong>Markov Decision Process</strong>.</p>
+
+    <hr>
+
+    <!-- ═══════ MDP ═══════ -->
+    <h2>Markov Decision Processes</h2>
+
+    <p>A <span class="term">Markov Decision Process<span class="tip">A mathematical model for sequential decision-making under uncertainty. Consists of states, actions, transitions, rewards, and a discount factor.</span></span> (MDP) is the formal framework for reinforcement learning, just as $(x,y)$ pairs are the formal framework for supervised learning.</p>
+
+    <p>An MDP has five components:</p>
+    <div class="math-block">$$(\mathcal{S},\; \mathcal{A},\; P,\; r,\; \gamma)$$</div>
+
+    <div class="callout callout-def">
+      <div class="callout-label">MDP Components</div>
+      <ul>
+        <li>$\mathcal{S}$ — set of possible <strong>states</strong></li>
+        <li>$\mathcal{A}$ — set of possible <strong>actions</strong></li>
+        <li>$P(s' \mid s, a)$ — <strong>transition probability</strong>: how the world changes</li>
+        <li>$r(s, a)$ — <strong>reward function</strong>: immediate signal of quality</li>
+        <li>$\gamma \in [0,1)$ — <strong>discount factor</strong>: how much we care about the future</li>
+      </ul>
+    </div>
+
+    <h3>States</h3>
+    <p>A <span class="term">state<span class="tip">A description of the current situation containing all information the agent needs to act. Written $s_t$ at time $t$.</span></span> $s_t$ describes the situation the robot is currently in. For a walking robot this might include body position, velocity, joint angles, and foot contact. The state should contain enough information to decide what to do next.</p>
+
+    <h3>Actions</h3>
+    <p>An <span class="term">action<span class="tip">Something the agent does. Written $a_t$. Can be discrete (left/right) or continuous (motor torques).</span></span> $a_t$ is something the robot can do. In many robotics problems actions are continuous — for example a vector of motor torques:</p>
+    <div class="math-block">$$a_t = \begin{bmatrix}u_1 \\ u_2 \\ u_3\end{bmatrix}$$</div>
+
+    <h3>Transition Dynamics</h3>
+    <p>The <span class="term">transition dynamics<span class="tip">$P(s_{t+1} \mid s_t, a_t)$ — the probability of landing in state $s_{t+1}$ after taking action $a_t$ in state $s_t$. Encodes physics, noise, contact, etc.</span></span> describe how the environment changes:</p>
+    <div class="math-block">$$P(s_{t+1} \mid s_t, a_t)$$</div>
+    <p>Even sending the same command twice may produce slightly different results due to noise, friction, contact, or imperfect sensors.</p>
+
+    <h3>Rewards</h3>
+    <p>A <span class="term">reward<span class="tip">$r_t = r(s_t, a_t)$. A scalar signal telling the agent how good or bad something was. Defines the task.</span></span> $r_t$ tells the robot how good or bad something was. For a walking robot:</p>
+    <div class="math-block">$$r_t = \text{forward velocity} - 0.01\cdot\text{energy used} - c\cdot\mathbf{1}[\text{fell}]$$</div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Reward Design is Hard</div>
+      <p>The robot optimizes <em>exactly</em> what we reward, not necessarily what we intended. If we only reward forward velocity, the robot may learn to throw itself forward and fall. Poorly designed rewards produce strange behavior — a phenomenon sometimes called <em>reward hacking</em>.</p>
+    </div>
+
+    <h3>The Markov Assumption</h3>
+    <p>The word "Markov" means the future depends only on the present, not the full past:</p>
+    <div class="math-block">$$P(s_{t+1} \mid s_0,a_0,\ldots,s_t,a_t) = P(s_{t+1} \mid s_t,a_t)$$</div>
+    <p>This is powerful because the robot only needs the current state, not the entire history. However it only works if the state is rich enough. Knowing only a car's position is not enough to predict its next position — you also need velocity. A better state:</p>
+    <div class="math-block">$$s_t = \begin{bmatrix}\text{position} \\ \text{velocity}\end{bmatrix}$$</div>
+
+    <div class="callout callout-key">
+      <div class="callout-label">Key Idea</div>
+      <p>Many problems can be made Markov by choosing a sufficiently informative state representation.</p>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ POLICIES ═══════ -->
+    <h2>Policies</h2>
+
+    <p>A <span class="term">policy<span class="tip">A function mapping states to actions (or distributions over actions). Written $\pi$. The central object we learn in policy-based RL.</span></span> $\pi$ tells the robot what action to take.</p>
+
+    <p>A <strong>deterministic policy</strong> maps states directly to actions: $a_t = \pi(s_t)$.</p>
+
+    <p>A <strong>stochastic policy</strong> gives a conditional probability distribution over actions:</p>
+    <div class="math-block">$$\pi(a_t \mid s_t) = \text{probability of taking action } a_t \text{ in state } s_t$$</div>
+
+    <p>Stochastic policies are valuable because they allow <em>exploration</em> — if the robot always takes the same action it may never discover better ones.</p>
+
+    <p>A neural network policy with parameters $\theta$:</p>
+    <div class="math-block">$$\pi_\theta(a_t \mid s_t)$$</div>
+    <p>Learning means changing $\theta$ so that the policy chooses better actions.</p>
+
+    <hr>
+
+    <!-- ═══════ TRAJECTORIES ═══════ -->
+    <h2>Trajectories and Returns</h2>
+
+    <p>A <span class="term">trajectory<span class="tip">A sequence of states, actions, and rewards produced by running a policy in an environment. Written $\tau = (s_0,a_0,r_0,s_1,a_1,r_1,\ldots)$.</span></span> is a full episode:</p>
+    <div class="math-block">$$\tau = (s_0, a_0, r_0, s_1, a_1, r_1, \ldots, s_T)$$</div>
+
+    <p>The total reward along a trajectory is the <span class="term">return<span class="tip">The cumulative (possibly discounted) reward along a trajectory. Written $R(\tau)$.</span></span>. For a finite horizon:</p>
+    <div class="math-block">$$R(\tau) = \sum_{t=0}^{T-1} r_t$$</div>
+
+    <p>For an infinite horizon we discount future rewards:</p>
+    <div class="math-block">$$R(\tau) = \sum_{t=0}^{\infty} \gamma^t r_t, \qquad 0 \leq \gamma < 1$$</div>
+
+    <div class="callout callout-note">
+      <div class="callout-label">Why discount?</div>
+      <ol>
+        <li>Makes infinite sums finite and well-defined.</li>
+        <li>Encodes preference for sooner rewards over later ones.</li>
+        <li>Reflects uncertainty about the far future.</li>
+      </ol>
+      <p style="margin-top:8px;">$\gamma \approx 1$: agent cares a lot about the future. $\gamma \approx 0$: agent is myopic.</p>
+    </div>
+    [can we add a figure somewhere in the above section that illustrates the MDP graph or something like this]
+
+    <hr>
+
+    <!-- ═══════ RL OBJECTIVE ═══════ -->
+    <h2>The Reinforcement Learning Objective</h2>
+
+    <p>The goal of RL is to find a policy with high expected return:</p>
+    <div class="math-block">$$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]$$</div>
+
+    <div class="callout callout-key">
+      <div class="callout-label">RL Objective</div>
+      <div class="math-block">$$\max_\theta\; J(\theta) = \max_\theta\; \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]$$</div>
+      <p>We do <strong>gradient ascent</strong> (not descent) because we are maximizing:</p>
+      <div class="math-block">$$\theta \leftarrow \theta + \alpha\,\nabla_\theta J(\theta)$$</div>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ POLICY GRADIENT ═══════ -->
+    <h2>The Policy Gradient Theorem</h2>
+
+    <p>In supervised learning, we could compute $\nabla_\theta L(\theta)$ directly via backprop. In RL the objective is:</p>
+    <div class="math-block">$$J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]$$</div>
+    <p>This is harder because the expectation itself depends on $\theta$. Changing $\theta$ changes the policy → changes the actions → changes the states visited → changes the rewards. We need:</p>
+    <div class="math-block">$$\nabla_\theta\,\mathbb{E}_{\tau \sim \pi_\theta}[R(\tau)]$$</div>
+
+    <h3>Step 1 — Trajectory Probability</h3>
+    <p>A trajectory's probability under $\pi_\theta$ factors as:</p>
+    <div class="math-block">$$p_\theta(\tau) = p(s_0)\prod_{t=0}^{T-1}\pi_\theta(a_t \mid s_t)\,P(s_{t+1} \mid s_t, a_t)$$</div>
+    <p>Three kinds of terms: initial state distribution, policy, and environment dynamics. <strong>Only the policy depends on $\theta$.</strong></p>
+
+    <h3>Step 2 — The Log-Derivative Trick</h3>
+    <p>Writing the expectation as a sum and differentiating:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \nabla_\theta\sum_\tau p_\theta(\tau)\,R(\tau) = \sum_\tau \nabla_\theta p_\theta(\tau)\,R(\tau)$$</div>
+    <p>We use the identity $\nabla_\theta p_\theta(\tau) = p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)$ to write this as an expectation:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\nabla_\theta \log p_\theta(\tau)\,R(\tau)\right]$$</div>
+
+    <h3>Step 3 — Simplify the Log</h3>
+    <p>Taking the log of $p_\theta(\tau)$:</p>
+    <div class="math-block">$$\log p_\theta(\tau) = \log p(s_0) + \sum_{t=0}^{T-1}\log\pi_\theta(a_t \mid s_t) + \sum_{t=0}^{T-1}\log P(s_{t+1}\mid s_t,a_t)$$</div>
+    <p>Differentiating with respect to $\theta$: the first and third terms vanish (they don't depend on $\theta$):</p>
+    <div class="math-block">$$\nabla_\theta \log p_\theta(\tau) = \sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t \mid s_t)$$</div>
+
+    <div class="callout callout-key">
+      <div class="callout-label">Policy Gradient Theorem (REINFORCE)</div>
+      <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\left(\sum_{t=0}^{T-1}\nabla_\theta \log\pi_\theta(a_t \mid s_t)\right)R(\tau)\right]$$</div>
+      <p>We only need to differentiate the <em>policy</em>, not the environment. This is remarkable — we can compute policy gradients without knowing the dynamics $P$.</p>
+    </div>
+
+    <h3>Interpretation</h3>
+    <p>$\nabla_\theta \log\pi_\theta(a_t \mid s_t)$ points in the direction that makes action $a_t$ more likely in state $s_t$. Multiplying by $R(\tau)$ means: if the trajectory got high return, push toward its actions; if it got low return, push less (or away).</p>
+
+    <h3>Reward-to-Go</h3>
+    <p>An action at time $t$ cannot affect rewards that happened before $t$. So instead of the full return $R(\tau)$, we use <span class="term">reward-to-go<span class="tip">$G_t = \sum_{k=t}^{T-1}\gamma^{k-t}r_k$ — rewards from time $t$ onward. Credits each action only with consequences it could have caused.</span></span>:</p>
+    <div class="math-block">$$G_t = \sum_{k=t}^{T-1}\gamma^{k-t} r_k$$</div>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t=0}^{T-1}\nabla_\theta\log\pi_\theta(a_t \mid s_t)\,G_t\right]$$</div>
+    [clarify if this is mathematically equivalent or not/and why this is better to use]
+
+    <hr>
+
+    <!-- ═══════ VARIANCE ═══════ -->
+    <h2>The Variance Problem</h2>
+    []
+    <p>Policy gradients are elegant but have a major problem: <strong>high variance</strong>. The return can vary dramatically across trajectories due to environment stochasticity or exploration. One trajectory might get high reward by luck, another low reward by luck. The gradient estimate changes wildly from batch to batch, making learning unstable and sample-inefficient.</p>
+
+    <h3>Baselines</h3>
+    <p>A key trick is to subtract a <span class="term">baseline<span class="tip">A function $b(s_t)$ subtracted from the return to reduce variance without biasing the gradient. The value function is the most common choice.</span></span>:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t}\nabla_\theta\log\pi_\theta(a_t \mid s_t)\,(G_t - b(s_t))\right]$$</div>
+    <p>This does not bias the gradient as long as $b$ does not depend on the action. Here is why:</p>
+    <div class="math-block">$$\mathbb{E}_{a\sim\pi_\theta(\cdot\mid s)}\!\left[\nabla_\theta\log\pi_\theta(a\mid s)\,b(s)\right] = b(s)\sum_a\nabla_\theta\pi_\theta(a\mid s) = b(s)\,\nabla_\theta\underbrace{\sum_a\pi_\theta(a\mid s)}_{=1} = 0$$</div>
+
+    <div class="callout callout-note">
+      <div class="callout-label">Subtracting a Baseline is Free</div>
+      <p>Since the baseline contributes zero in expectation, we get variance reduction at no cost in bias. A well-chosen baseline can dramatically stabilize training.</p>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ VALUE FUNCTIONS ═══════ -->
+    <h2>Value Functions, Q-Functions, and Advantages</h2>
+
+    <h3>Value Function</h3>
+    <p>A natural baseline is the <span class="term">value function<span class="tip">$V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t = s]$ — expected future return starting from state $s$ under policy $\pi$.</span></span>:</p>
+    <div class="math-block">$$V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t = s]$$</div>
+    <p>High-value states tend to lead to high reward; low-value states tend to lead to low reward.</p>
+
+    <h3>Q-Function</h3>
+    <p>The <span class="term">Q-function<span class="tip">$Q^\pi(s,a) = \mathbb{E}_\pi[G_t \mid s_t=s, a_t=a]$ — expected return from taking action $a$ in state $s$, then following $\pi$.</span></span> asks how good a specific action is in a specific state:</p>
+    <div class="math-block">$$Q^\pi(s,a) = \mathbb{E}_\pi[G_t \mid s_t=s,\; a_t=a]$$</div>
+
+    <h3>Advantage Function</h3>
+    <p>The <span class="term">advantage function<span class="tip">$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$ — how much better action $a$ is compared to the average action from state $s$.</span></span> compares an action to the average:</p>
+    <div class="math-block">$$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$$</div>
+
+    <div class="callout callout-key">
+      <div class="callout-label">Policy Gradient with Advantage</div>
+      <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t}\nabla_\theta\log\pi_\theta(a_t\mid s_t)\,A^\pi(s_t,a_t)\right]$$</div>
+      <ul>
+        <li>$A > 0$: action was <em>better</em> than expected → <strong>increase</strong> its probability.</li>
+        <li>$A < 0$: action was <em>worse</em> than expected → <strong>decrease</strong> its probability.</li>
+        <li>$A \approx 0$: action was average → little change.</li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ ACTOR-CRITIC ═══════ -->
+    <h2>Actor-Critic Methods</h2>
+
+    <p>In practice, we learn both a policy and a value function. This gives an <span class="term">actor-critic<span class="tip">A family of RL algorithms where the actor (policy $\pi_\theta$) chooses actions and the critic (value function $V_\phi$) evaluates them.</span></span> method.</p>
+
+    <ul>
+      <li>The <strong>actor</strong> $\pi_\theta(a \mid s)$ chooses actions (parameters $\theta$).</li>
+      <li>The <strong>critic</strong> $V_\phi(s)$ estimates how good states are (parameters $\phi$).</li>
+    </ul>
+
+    <p>Advantage estimate:</p>
+    <div class="math-block">$$\hat{A}_t = G_t - V_\phi(s_t)$$</div>
+
+    <p>Critic loss (train critic to predict returns):</p>
+    <div class="math-block">$$L_{\text{critic}}(\phi) = \bigl(V_\phi(s_t) - G_t\bigr)^2$$</div>
+
+    <div class="algo">
+      <div class="algo-title">Actor-Critic Training Loop</div>
+      <pre>1. Collect trajectories with current policy π_θ
+2. Compute returns G_t
+3. Train critic: minimize (V_φ(s_t) - G_t)²
+4. Compute advantages: Â_t = G_t - V_φ(s_t)
+5. Update actor: θ ← θ + α ∇_θ Σ_t log π_θ(a_t|s_t) Â_t
+6. Repeat</pre>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ INSTABILITY ═══════ -->
+    <h2>Why Vanilla Policy Gradient Can Be Unstable</h2>
+
+    <p>Even with a critic, policy gradient methods can be unstable. The main issue: if we update the policy too aggressively, the new policy may behave very differently from the old one — but our data came from the old policy. The old data may no longer describe the new policy accurately, leading to bad updates that destabilize learning.</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">The Policy Update Problem</div>
+      <p>In supervised learning the dataset is fixed. In RL the data distribution depends on the policy. Large policy updates → distribution shift → unstable learning. We want to improve the policy without changing it too much at once.</p>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ ON/OFF POLICY ═══════ -->
+    <h2>On-Policy and Off-Policy Learning</h2>
+
+    <p>An algorithm is <span class="term">on-policy<span class="tip">Learns from data collected by the current policy. Data cannot be reused after the policy changes.</span></span> if it learns from data collected by the current policy $\pi_\theta$. REINFORCE and PPO are on-policy.</p>
+
+    <p>An algorithm is <span class="term">off-policy<span class="tip">Can learn from data collected by a different (e.g. older) policy. More sample efficient but requires importance sampling corrections.</span></span> if it can learn from data collected by a different policy — for example, a replay buffer of old experiences. Q-learning and DQN are off-policy.</p>
+
+    <h3>Importance Sampling and the Policy Ratio</h3>
+    <p>When data comes from old policy $\pi_{\theta_\text{old}}$ but we want to update $\pi_\theta$, importance sampling corrects the mismatch. The key quantity is the <span class="term">policy ratio<span class="tip">$r_t(\theta) = \pi_\theta(a_t|s_t)/\pi_{\theta_\text{old}}(a_t|s_t)$. Measures how much more (or less) likely the new policy is to take the same action.</span></span>:</p>
+    <div class="math-block">$$r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_\text{old}}(a_t \mid s_t)}$$</div>
+
+    <ul>
+      <li>$r_t > 1$: new policy assigns higher probability to the action.</li>
+      <li>$r_t < 1$: new policy assigns lower probability.</li>
+      <li>$r_t = 1$: policies agree on this action.</li>
+    </ul>
+
+    <hr>
+
+    <!-- ═══════ TRPO ═══════ -->
+    <h2>Trust Regions: The Idea Behind TRPO</h2>
+
+    <p>One principled way to prevent large policy updates is to add a constraint on how much the new policy can differ from the old one, measured by <span class="term">KL divergence<span class="tip">$D_\text{KL}(p\|q) = \sum_x p(x)\log\frac{p(x)}{q(x)}$. Measures how different two distributions are. Zero when $p=q$.</span></span>:</p>
+
+    <div class="math-block">$$\max_\theta\;\mathbb{E}\!\left[r_t(\theta)\,\hat{A}_t\right] \quad\text{subject to}\quad D_\text{KL}(\pi_{\theta_\text{old}}\,\|\,\pi_\theta) \leq \delta$$</div>
+
+    <p>This is the idea behind <strong>TRPO</strong> (Trust Region Policy Optimization). It works well but is expensive to implement because enforcing the KL constraint requires second-order optimization. PPO is a simpler practical version of the same idea.</p>
+
+    <hr>
+
+    <!-- ═══════ PPO ═══════ -->
+    <h2>Proximal Policy Optimization (PPO)</h2>
+
+    <p><span class="term">PPO<span class="tip">Proximal Policy Optimization. A popular, stable policy gradient algorithm that clips the policy ratio to prevent large updates.</span></span> keeps the policy close to the old one by <em>clipping</em> the policy ratio rather than solving a constrained optimization problem.</p>
+
+    <p>A basic surrogate objective using old data:</p>
+    <div class="math-block">$$L(\theta) = \mathbb{E}\!\left[r_t(\theta)\,\hat{A}_t\right]$$</div>
+
+    <p>If $r_t(\theta)$ becomes too large or too small, the update is too aggressive. PPO clips the ratio:</p>
+
+    <div class="callout callout-key">
+      <div class="callout-label">PPO Clipped Objective</div>
+      <div class="math-block">$$L^\text{CLIP}(\theta) = \mathbb{E}\!\left[\min\!\left(r_t(\theta)\,\hat{A}_t,\;\operatorname{clip}(r_t(\theta),\,1-\epsilon,\,1+\epsilon)\,\hat{A}_t\right)\right]$$</div>
+      <p>The clipping keeps $r_t(\theta)$ inside $[1-\epsilon,\; 1+\epsilon]$. A typical value is $\epsilon = 0.2$, giving the range $[0.8,\; 1.2]$.</p>
+    </div>
+
+    <h3>Intuition for Clipping</h3>
+    <p>If an action had <strong>positive advantage</strong> ($\hat{A}_t > 0$): the action was better than expected, so we increase its probability — but PPO caps the increase. If an action had <strong>negative advantage</strong> ($\hat{A}_t < 0$): we decrease its probability — but PPO caps the decrease too. This prevents the policy from changing too drastically in one update, keeping training stable.</p>
+
+    <h3>Advantage Estimation</h3>
+    <p>A simple advantage estimate is $\hat{A}_t = G_t - V_\phi(s_t)$. Modern PPO uses <span class="term">GAE<span class="tip">Generalized Advantage Estimation. Mixes short-term and long-term advantage estimates using parameter $\lambda$ to control bias-variance tradeoff.</span></span> (Generalized Advantage Estimation):</p>
+    <div class="math-block">$$\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$$</div>
+    <div class="math-block">$$\hat{A}_t = \sum_{l=0}^{\infty}(\gamma\lambda)^l\,\delta_{t+l}$$</div>
+    <p>Here $\lambda$ controls the bias-variance tradeoff. You do not need to memorize this formula — the key idea is that advantage estimation measures whether an action was better or worse than expected, stably enough to learn from.</p>
+
+    <h3>The Full PPO Algorithm</h3>
+
+    <div class="algo">
+      <div class="algo-title">PPO Algorithm</div>
+      <pre>Initialize actor  π_θ(a | s)
+Initialize critic V_φ(s)
+
+Repeat until convergence:
+  ─── Data Collection ───────────────────────────────────
+  Collect N trajectories using current policy π_θ
+  Store: states s_t, actions a_t, rewards r_t,
+         old action probs π_old(a_t | s_t)
+
+  ─── Compute Targets ───────────────────────────────────
+  Compute returns      G_t = Σ γ^k r_{t+k}
+  Compute TD errors    δ_t = r_t + γ V_φ(s_{t+1}) - V_φ(s_t)
+  Compute advantages   Â_t via GAE
+
+  ─── Multiple Gradient Steps ───────────────────────────
+  For K epochs over the collected data:
+    Compute ratio  r_t(θ) = π_θ(a_t|s_t) / π_old(a_t|s_t)
+    Actor loss   = -E[min(r_t·Â_t, clip(r_t,1-ε,1+ε)·Â_t)]
+    Critic loss  = E[(V_φ(s_t) - G_t)²]
+    Update θ and φ via gradient descent</pre>
+    </div>
+
+    <hr>
+
+    <!-- ═══════ PPO IN ROBOTICS ═══════ -->
+    <h2>PPO in Robotics</h2>
+
+    <p>PPO is widely used in simulated robotics because it is stable and easy to apply. It can train agents to balance a pole, walk, run, hop, control a robot arm, or imitate locomotion behaviors.</p>
+
+    <p>In MuJoCo environments the loop is:</p>
+    <ol>
+      <li>The simulator gives the robot a state $s_t$.</li>
+      <li>The policy samples an action $a_t \sim \pi_\theta(\cdot \mid s_t)$.</li>
+      <li>The simulator applies the action and returns $s_{t+1}$ and $r_t$.</li>
+      <li>After collecting many steps, PPO updates the policy.</li>
+    </ol>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Sim-to-Real Gap</div>
+      <p>Simulators are not perfect. Policies trained in simulation may fail in the real world because of differences in friction, contact dynamics, sensor noise, and actuator response. Bridging this gap — <em>sim-to-real transfer</em> — is an active research area.</p>
+    </div>
+
+    <h3>When Policy Gradients Work Well</h3>
+    <ul>
+      <li>Fast simulator with continuous actions.</li>
+      <li>Informative, dense reward signal.</li>
+      <li>Exploration not too difficult.</li>
+      <li>Ability to collect many trajectories.</li>
+    </ul>
+
+    <h3>When Policy Gradients Struggle</h3>
+    <ul>
+      <li>Very sparse rewards (robot only succeeds rarely).</li>
+      <li>Long-horizon tasks requiring many sequential correct decisions.</li>
+      <li>Irreversible failure modes (one bad action ends the episode).</li>
+      <li>Poorly designed reward function.</li>
+    </ul>
+
+    <hr>
+
+    <!-- ═══════ SUMMARY ═══════ -->
+    <h2>Summary</h2>
+
+    <div class="callout callout-def">
+      <div class="callout-label">Key Ideas This Week</div>
+      <ul>
+        <li><strong>RL vs SL:</strong> RL learns from rewards, not labels. Data is collected by the agent and the distribution changes with the policy.</li>
+        <li><strong>MDP:</strong> $(\mathcal{S}, \mathcal{A}, P, r, \gamma)$ — the formal framework for sequential decision-making.</li>
+        <li><strong>Policy:</strong> $\pi_\theta(a\mid s)$ — what we learn. Stochastic policies enable exploration.</li>
+        <li><strong>RL objective:</strong> $\max_\theta J(\theta) = \max_\theta \mathbb{E}_{\tau\sim\pi_\theta}[R(\tau)]$</li>
+        <li><strong>Policy gradient:</strong> $\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_t \nabla_\theta\log\pi_\theta(a_t\mid s_t)\,\hat{A}_t\right]$</li>
+        <li><strong>Advantage:</strong> $A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$ — was this action better or worse than expected?</li>
+        <li><strong>Actor-critic:</strong> learn both a policy (actor) and value function (critic) to reduce variance.</li>
+        <li><strong>PPO:</strong> stabilizes learning by clipping the policy ratio $r_t(\theta) = \pi_\theta/\pi_{\theta_\text{old}}$ to $[1-\epsilon, 1+\epsilon]$.</li>
+      </ul>
+    </div>
+
+    <p>The central intuition: <em>make actions that led to good outcomes more likely; make actions that led to bad outcomes less likely — but change the policy gradually.</em></p>
+
+    <hr>
+
+    <!-- ═══════ LAB ═══════ -->
+    <h2>Lab: Training a Robot in MuJoCo</h2>
+
+    <p>In the lab we will train a policy with PPO in a simulated robotics environment. The workflow:</p>
+    <ol>
+      <li>Load a simulated robotics environment.</li>
+      <li>Observe the state and action spaces.</li>
+      <li>Initialize a policy network.</li>
+      <li>Train using PPO.</li>
+      <li>Plot reward over training time.</li>
+      <li>Watch the trained behavior and discuss what worked and what failed.</li>
+    </ol>
+
+    <div class="callout callout-note">
+      <div class="callout-label">Goal of the Lab</div>
+      <p>You do not need to implement PPO from scratch. The goal is to understand what each component does:</p>
+      <ul>
+        <li>the environment gives states and rewards,</li>
+        <li>the policy samples actions,</li>
+        <li>the critic estimates values,</li>
+        <li>advantages measure whether actions were good,</li>
+        <li>the PPO objective updates the policy carefully.</li>
+      </ul>
+      <p>By the end you should be able to explain what the policy learned and how the reward changed during training.</p>
+    </div>
+
+  </div><!-- end .notes -->
 </main>
 
 <footer>
   <a href="week1.html">← Week 1: Foundations</a>
   <a href="week3.html">Week 3: Advanced Topics →</a>
 </footer>
-
-<script type="text/markdown" id="source">
-
-## Overview
-
-TBD — notes will appear here.
-
----
-
-## Markov Decision Processes
-
-TBD
-
----
-
-## The Policy Gradient Theorem
-
-TBD
-
----
-
-## Proximal Policy Optimization (PPO)
-
-TBD
-
----
-
-## Lab: Training a Robot in MuJoCo
-
-TBD
-</script>
-
-<script>
-  const src = document.getElementById('source').textContent;
-  document.getElementById('content').innerHTML = marked.parse(src);
-  if (window.MathJax) MathJax.typesetPromise([document.getElementById('content')]);
-</script>
 
 </body>
 </html>
