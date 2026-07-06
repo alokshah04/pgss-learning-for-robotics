@@ -147,6 +147,20 @@
     .cmp-table th { background: var(--def-bg); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 2px solid var(--def-border); }
     .cmp-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
     .cmp-table tr:last-child td { border-bottom: none; }
+
+    /* ── Canvas visuals ── */
+    .viz-wrap {
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px;
+      padding: 16px; margin: 24px 0; text-align: center;
+    }
+    .viz-wrap canvas { display: block; margin: 0 auto; max-width: 100%; border-radius: 6px; }
+    .viz-caption { font-size: 13px; color: var(--muted); margin-top: 10px; }
+    .viz-btn {
+      display: inline-block; margin-top: 10px; padding: 5px 14px;
+      background: var(--accent); color: #fff; border: none; border-radius: 6px;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+    }
+    .viz-btn:hover { background: #1d4ed8; }
   </style>
 </head>
 <body>
@@ -206,7 +220,9 @@
     <div class="math-block">$$x \rightarrow y$$</div>
     <p>The model sees input $x$ and predicts label $y$. The loss is <em>immediate</em> — if the model predicts wrong, we know right away:</p>
     <div class="math-block">$$L(\theta) = (f_\theta(x) - y)^2$$</div>
-    [or cross entropy loss if categorical data]
+    <p>For classification (categorical outputs), the loss is instead <strong>cross-entropy</strong>:</p>
+    <div class="math-block">$$L(\theta) = -\sum_{k} y_k \log f_\theta(x)_k$$</div>
+    <p>where $y_k = 1$ for the correct class and $0$ otherwise. Either way, the loss is computed immediately from a label $y$.</p>
     <p>In reinforcement learning the situation is different. A robot takes an action, but we may not immediately know whether that action was good. Suppose a robot is learning to walk. At $t=0$ it moves one leg slightly forward — was that good? Only if the robot eventually walks. If it falls, maybe not. But the reward may only arrive after many steps.</p>
 
     <p>This makes RL harder than supervised learning in five ways:</p>
@@ -326,7 +342,53 @@
       </ol>
       <p style="margin-top:8px;">$\gamma \approx 1$: agent cares a lot about the future. $\gamma \approx 0$: agent is myopic.</p>
     </div>
-    [can we add a figure somewhere in the above section that illustrates the MDP graph or something like this]
+    <!-- MDP diagram -->
+    <div class="viz-wrap">
+      <svg viewBox="0 0 660 200" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:660px;display:block;margin:0 auto;font-family:system-ui,sans-serif;overflow:visible;">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+            <polygon points="0 0,8 3,0 6" fill="#2563eb"/>
+          </marker>
+        </defs>
+
+        <!-- State circles -->
+        <circle cx="100" cy="100" r="38" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="100" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">s_t</text>
+        <text x="100" y="112" text-anchor="middle" font-size="11" fill="#2563eb">state</text>
+
+        <circle cx="560" cy="100" r="38" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+        <text x="560" y="95" text-anchor="middle" font-size="13" font-weight="700" fill="#1e3a8a">s_{t+1}</text>
+        <text x="560" y="112" text-anchor="middle" font-size="11" fill="#2563eb">next state</text>
+
+        <!-- Action box -->
+        <rect x="255" y="72" width="90" height="56" rx="8" fill="#fefce8" stroke="#fde047" stroke-width="1.5"/>
+        <text x="300" y="97" text-anchor="middle" font-size="13" font-weight="700" fill="#a16207">a_t</text>
+        <text x="300" y="114" text-anchor="middle" font-size="11" fill="#a16207">action</text>
+
+        <!-- Reward badge -->
+        <circle cx="330" cy="168" r="22" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+        <text x="330" y="164" text-anchor="middle" font-size="12" font-weight="700" fill="#15803d">r_t</text>
+        <text x="330" y="179" text-anchor="middle" font-size="10" fill="#15803d">reward</text>
+
+        <!-- s_t → action -->
+        <line x1="138" y1="100" x2="253" y2="100" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="196" y="92" text-anchor="middle" font-size="11" fill="#666">π_θ(a|s)</text>
+
+        <!-- action → s_{t+1} -->
+        <line x1="345" y1="100" x2="520" y2="100" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="433" y="92" text-anchor="middle" font-size="11" fill="#666">P(s'|s,a)</text>
+
+        <!-- action → reward -->
+        <line x1="300" y1="128" x2="330" y2="145" stroke="#86efac" stroke-width="1.5" marker-end="url(#arr)"/>
+        <text x="322" y="140" text-anchor="middle" font-size="10" fill="#666">r(s,a)</text>
+
+        <!-- Loop arrow s_{t+1} back around -->
+        <path d="M560,62 Q560,20 330,20 Q100,20 100,62" fill="none" stroke="#2563eb" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+        <text x="330" y="14" text-anchor="middle" font-size="11" fill="#666">next step: s_{t+1} becomes s_t</text>
+      </svg>
+      <div class="viz-caption">The MDP loop: the agent observes state $s_t$, the policy $\pi_\theta$ selects action $a_t$, the environment transitions to $s_{t+1}$ via $P(s'\mid s,a)$ and emits reward $r_t = r(s_t,a_t)$. Then $s_{t+1}$ becomes the new $s_t$ and the cycle repeats.</div>
+    </div>
 
     <hr>
 
@@ -379,64 +441,217 @@
     <h3>Interpretation</h3>
     <p>$\nabla_\theta \log\pi_\theta(a_t \mid s_t)$ points in the direction that makes action $a_t$ more likely in state $s_t$. Multiplying by $R(\tau)$ means: if the trajectory got high return, push toward its actions; if it got low return, push less (or away).</p>
 
-    <h3>Reward-to-Go</h3>
-    <p>An action at time $t$ cannot affect rewards that happened before $t$. So instead of the full return $R(\tau)$, we use <span class="term">reward-to-go<span class="tip">$G_t = \sum_{k=t}^{T-1}\gamma^{k-t}r_k$ — rewards from time $t$ onward. Credits each action only with consequences it could have caused.</span></span>:</p>
-    <div class="math-block">$$G_t = \sum_{k=t}^{T-1}\gamma^{k-t} r_k$$</div>
-    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t=0}^{T-1}\nabla_\theta\log\pi_\theta(a_t \mid s_t)\,G_t\right]$$</div>
-    [clarify if this is mathematically equivalent or not/and why this is better to use]
-
     <hr>
 
     <!-- ═══════ VARIANCE ═══════ -->
-    <h2>The Variance Problem</h2>
-    []
-    <p>Policy gradients are elegant but have a major problem: <strong>high variance</strong>. The return can vary dramatically across trajectories due to environment stochasticity or exploration. One trajectory might get high reward by luck, another low reward by luck. The gradient estimate changes wildly from batch to batch, making learning unstable and sample-inefficient.</p>
+    <h2>The Variance Problem and How to Fix It</h2>
 
-    <h3>Baselines</h3>
-    <p>A key trick is to subtract a <span class="term">baseline<span class="tip">A function $b(s_t)$ subtracted from the return to reduce variance without biasing the gradient. The value function is the most common choice.</span></span>:</p>
-    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t}\nabla_\theta\log\pi_\theta(a_t \mid s_t)\,(G_t - b(s_t))\right]$$</div>
-    <p>This does not bias the gradient as long as $b$ does not depend on the action. Here is why:</p>
-    <div class="math-block">$$\mathbb{E}_{a\sim\pi_\theta(\cdot\mid s)}\!\left[\nabla_\theta\log\pi_\theta(a\mid s)\,b(s)\right] = b(s)\sum_a\nabla_\theta\pi_\theta(a\mid s) = b(s)\,\nabla_\theta\underbrace{\sum_a\pi_\theta(a\mid s)}_{=1} = 0$$</div>
+    <p>REINFORCE is correct in expectation, but it has a severe practical problem: <strong>high variance</strong>. The return $\sum_{t=0}^{T-1}\gamma^t r_t$ can swing wildly across trajectories due to environment stochasticity and random exploration. The gradient estimate changes dramatically from batch to batch, making learning slow, noisy, and unstable.</p>
+
+    <h4>A Concrete Example</h4>
+    <p>Suppose a robot has two actions: go <strong>left</strong> or go <strong>right</strong>. The true expected return is $0$ for both. But due to noise, in one episode going right gets $+10$, in the next $-10$. The gradient estimate flip-flops wildly between "go right more" and "go right less" — even though neither action is actually better. This is high variance in action.</p>
+
+    <div class="viz-wrap">
+      <canvas id="varCanvas" width="660" height="220"></canvas>
+      <div class="viz-caption">Blue dots: gradient estimates from individual episodes. Orange dashed: true gradient (zero). Red: running average — it takes many samples to converge.</div>
+      <button class="viz-btn" onclick="resetVar()">New Sample</button>
+    </div>
+
+    <p>We have three main tools to reduce variance, each addressing a different root cause:</p>
+    <ol>
+      <li><strong>Reward-to-go</strong> — remove credit for rewards the action couldn't have caused.</li>
+      <li><strong>Baselines</strong> — subtract a state-dependent reference to center the signal.</li>
+      <li><strong>Learning a critic</strong> — replace the noisy Monte Carlo return with a learned value estimate.</li>
+    </ol>
+
+    <h3>Fix 1: Reward-to-Go</h3>
+    <p>In REINFORCE, every action $a_t$ is weighted by the <em>full</em> trajectory return $\sum_{k=0}^{T-1}\gamma^k r_k$. But action $a_t$ cannot possibly have caused rewards <em>before</em> time $t$. Those past rewards are just noise from the perspective of $a_t$. We can remove them.</p>
+
+    <p>Define the <span class="term">reward-to-go<span class="tip">Rewards from time $t$ onward. Removes past rewards that action $a_t$ could not have caused, reducing variance without introducing bias.</span></span> as:</p>
+    <div class="math-block">$$G_t \;=\; \sum_{k=t}^{T-1}\gamma^{k-t}\,r_k$$</div>
+
+    <p>The updated estimator is:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t=0}^{T-1}\nabla_\theta\log\pi_\theta(a_t \mid s_t)\,G_t\right]$$</div>
+
+    <div class="callout callout-note">
+      <div class="callout-label">Why Reward-to-Go is Unbiased (Mathematical Proof)</div>
+      <p>The full REINFORCE estimator uses $R(\tau) = \sum_{k=0}^{T-1}\gamma^k r_k$. Split this into past and future rewards at time $t$:</p>
+      <div class="math-block">$$R(\tau) = \underbrace{\sum_{k=0}^{t-1}\gamma^k r_k}_{\text{past}} + \underbrace{\sum_{k=t}^{T-1}\gamma^k r_k}_{\text{future}}$$</div>
+      <p>For the past-reward term, since $\sum_{k < t}\gamma^k r_k$ is independent of $a_t$ given $s_t$ (action $a_t$ happens <em>after</em> these rewards), we have by the same argument as the baseline proof:</p>
+      <div class="math-block">$$\mathbb{E}\!\left[\nabla_\theta\log\pi_\theta(a_t\mid s_t)\cdot\sum_{k=0}^{t-1}\gamma^k r_k\;\Bigg|\;s_t\right] = 0$$</div>
+      <p>So the past-reward terms vanish in expectation. The reward-to-go estimator is therefore <strong>unbiased</strong> — it has the same expected value as REINFORCE — but lower variance because it removes irrelevant noise from past rewards.</p>
+    </div>
+
+    <h3>Fix 2: Baselines</h3>
+    <p>Even after using reward-to-go, the return $G_t = \sum_{k=t}^{T-1}\gamma^{k-t}r_k$ can still vary a lot depending on the random actions and environment noise that follow $t$. We can reduce this further by subtracting a <span class="term">baseline<span class="tip">A function $b(s_t)$ subtracted from the return. Reduces variance without biasing the gradient, as long as it doesn't depend on the action.</span></span> $b(s_t)$:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t}\nabla_\theta\log\pi_\theta(a_t \mid s_t)\,\Bigl(\underbrace{\sum_{k=t}^{T-1}\gamma^{k-t}r_k}_{G_t} - b(s_t)\Bigr)\right]$$</div>
+
+    <h4>Why does this reduce variance?</h4>
+    <p>Let $X = \nabla_\theta\log\pi_\theta(a_t\mid s_t)\cdot G_t$. For any random variable $b(s)$ correlated with $X$:</p>
+    <div class="math-block">$$\text{Var}[X - b(s)] = \text{Var}[X] - 2\,\text{Cov}[X,\,b(s)] + \text{Var}[b(s)]$$</div>
+    <p>When $\text{Cov}[X, b(s)] > \frac{1}{2}\text{Var}[b(s)]$, subtracting $b(s)$ strictly reduces variance. The variance-minimizing optimal baseline is:</p>
+    <div class="math-block">$$b^*(s) = \frac{\mathbb{E}\!\left[\|\nabla_\theta\log\pi_\theta(a\mid s)\|^2\,G_t\right]}{\mathbb{E}\!\left[\|\nabla_\theta\log\pi_\theta(a\mid s)\|^2\right]}$$</div>
+    <p>In practice we approximate this with $b(s) = V^\pi(s)$, which is close to optimal and easy to learn.</p>
+
+    <h4>Why doesn't the baseline bias the gradient?</h4>
+    <p>We need to show $\mathbb{E}_{a\sim\pi_\theta(\cdot\mid s)}\!\left[\nabla_\theta\log\pi_\theta(a\mid s)\,b(s)\right] = 0$. Since $b(s)$ does not depend on $a$:</p>
+    <div class="math-block">$$b(s)\sum_a\pi_\theta(a\mid s)\,\nabla_\theta\log\pi_\theta(a\mid s) \;=\; b(s)\sum_a\nabla_\theta\pi_\theta(a\mid s) \;=\; b(s)\,\nabla_\theta\underbrace{\sum_a\pi_\theta(a\mid s)}_{=1} \;=\; 0$$</div>
 
     <div class="callout callout-note">
       <div class="callout-label">Subtracting a Baseline is Free</div>
-      <p>Since the baseline contributes zero in expectation, we get variance reduction at no cost in bias. A well-chosen baseline can dramatically stabilize training.</p>
+      <p>Zero bias cost, guaranteed. Any variance reduction is a strict improvement. Choosing $b(s_t) = V^\pi(s_t)$ gives the quantity $G_t - V^\pi(s_t)$, which is exactly the <strong>advantage</strong> $A^\pi(s_t, a_t)$ — and why advantages are so central to modern RL.</p>
     </div>
 
     <hr>
 
     <!-- ═══════ VALUE FUNCTIONS ═══════ -->
-    <h2>Value Functions, Q-Functions, and Advantages</h2>
+    <h2>What Is a Good Baseline? Value Functions and Advantages</h2>
+
+    <p>We established that any function $b(s_t)$ reduces variance without bias. But what should we actually use? The ideal baseline should be close to $G_t$ so the variance $\text{Var}[G_t - b(s_t)]$ is small. This motivates learning the <em>expected</em> return from each state.</p>
 
     <h3>Value Function</h3>
-    <p>A natural baseline is the <span class="term">value function<span class="tip">$V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t = s]$ — expected future return starting from state $s$ under policy $\pi$.</span></span>:</p>
-    <div class="math-block">$$V^\pi(s) = \mathbb{E}_\pi[G_t \mid s_t = s]$$</div>
-    <p>High-value states tend to lead to high reward; low-value states tend to lead to low reward.</p>
+    <p>The <span class="term">value function<span class="tip">$V^\pi(s) = \mathbb{E}_\pi\!\left[\sum_{k=0}^\infty \gamma^k r_{t+k} \mid s_t=s\right]$ — expected discounted return from state $s$ under policy $\pi$.</span></span> is exactly this:</p>
+    <div class="math-block">$$V^\pi(s) = \mathbb{E}_\pi\!\left[\sum_{k=0}^{\infty}\gamma^k r_{t+k} \;\Big|\; s_t = s\right]$$</div>
+    <p>Intuitively: if the robot is in state $s$ and follows policy $\pi$, $V^\pi(s)$ is how much total discounted reward it expects to collect. High-value states tend to lead to high reward; low-value states tend to lead to low reward.</p>
 
     <h3>Q-Function</h3>
-    <p>The <span class="term">Q-function<span class="tip">$Q^\pi(s,a) = \mathbb{E}_\pi[G_t \mid s_t=s, a_t=a]$ — expected return from taking action $a$ in state $s$, then following $\pi$.</span></span> asks how good a specific action is in a specific state:</p>
-    <div class="math-block">$$Q^\pi(s,a) = \mathbb{E}_\pi[G_t \mid s_t=s,\; a_t=a]$$</div>
+    <p>The <span class="term">Q-function<span class="tip">$Q^\pi(s,a)$ — expected return from taking action $a$ in state $s$, then following $\pi$ thereafter.</span></span> asks: how good is a specific action in a specific state?</p>
+    <div class="math-block">$$Q^\pi(s,a) = \mathbb{E}_\pi\!\left[\sum_{k=0}^{\infty}\gamma^k r_{t+k} \;\Big|\; s_t=s,\; a_t=a\right]$$</div>
+    <p>Note that $V^\pi(s) = \mathbb{E}_{a\sim\pi(\cdot\mid s)}[Q^\pi(s,a)]$ — the value is the average Q-value over actions taken by the policy.</p>
 
     <h3>Advantage Function</h3>
-    <p>The <span class="term">advantage function<span class="tip">$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$ — how much better action $a$ is compared to the average action from state $s$.</span></span> compares an action to the average:</p>
+    <p>The <span class="term">advantage function<span class="tip">$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$ — how much better action $a$ is compared to the average action the policy would take from state $s$.</span></span> tells us whether a specific action is better or worse than average:</p>
     <div class="math-block">$$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$$</div>
+    <p>Note that $\mathbb{E}_{a\sim\pi}[A^\pi(s,a)] = 0$ — the average advantage is always zero, by definition.</p>
 
     <div class="callout callout-key">
-      <div class="callout-label">Policy Gradient with Advantage</div>
-      <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t}\nabla_\theta\log\pi_\theta(a_t\mid s_t)\,A^\pi(s_t,a_t)\right]$$</div>
+      <div class="callout-label">Policy Gradient with Advantage (Fix 3)</div>
+      <p>Using $b(s_t) = V^\pi(s_t)$, the policy gradient becomes:</p>
+      <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t=0}^{T-1}\nabla_\theta\log\pi_\theta(a_t\mid s_t)\,A^\pi(s_t,a_t)\right]$$</div>
       <ul>
-        <li>$A > 0$: action was <em>better</em> than expected → <strong>increase</strong> its probability.</li>
-        <li>$A < 0$: action was <em>worse</em> than expected → <strong>decrease</strong> its probability.</li>
-        <li>$A \approx 0$: action was average → little change.</li>
+        <li>$A^\pi(s,a) > 0$: action was <em>better</em> than expected → <strong>increase</strong> its probability.</li>
+        <li>$A^\pi(s,a) < 0$: action was <em>worse</em> than expected → <strong>decrease</strong> its probability.</li>
+        <li>$A^\pi(s,a) \approx 0$: action was average → little change.</li>
       </ul>
     </div>
 
     <hr>
 
-    <!-- ═══════ ACTOR-CRITIC ═══════ -->
-    <h2>Actor-Critic Methods</h2>
+    <!-- ═══════ REINFORCE ALGORITHM ═══════ -->
+    <h2>The REINFORCE Algorithm</h2>
 
-    <p>In practice, we learn both a policy and a value function. This gives an <span class="term">actor-critic<span class="tip">A family of RL algorithms where the actor (policy $\pi_\theta$) chooses actions and the critic (value function $V_\phi$) evaluates them.</span></span> method.</p>
+    <p>Putting together the policy gradient theorem and reward-to-go, we get the classic <strong>REINFORCE</strong> algorithm. Before looking at how to improve it, compare it side-by-side with the supervised learning training loop:</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;">
+      <div class="algo">
+        <div class="algo-title">Supervised Learning</div>
+        <pre>Initialize model f_θ
+
+For each epoch:
+  Sample batch {(x_i, y_i)} from D
+  Compute predictions ŷ_i = f_θ(x_i)
+  Compute loss:
+    L = (1/B) Σ_i (ŷ_i - y_i)²
+  Compute gradient ∇_θ L
+  Update: θ ← θ - α ∇_θ L</pre>
+      </div>
+      <div class="algo">
+        <div class="algo-title">REINFORCE</div>
+        <pre>Initialize policy π_θ
+
+For each iteration:
+  Collect trajectories τ using π_θ
+  For each (s_t, a_t) in τ:
+    Compute reward-to-go:
+      G_t = Σ_{k≥t} γ^{k-t} r_k
+  Compute gradient:
+    ∇_θ J ≈ Σ_t ∇_θ log π_θ(a_t|s_t)·G_t
+  Update: θ ← θ + α ∇_θ J</pre>
+      </div>
+    </div>
+
+    <p>The structure is similar: sample data, evaluate, compute gradient, update. The key differences are: (1) data is collected by the <em>current policy</em>, not from a fixed dataset; (2) instead of minimizing loss we maximize reward, so the update uses gradient <em>ascent</em>; (3) the "label" is the reward-to-go $G_t = \sum_{k\geq t}\gamma^{k-t}r_k$, not a fixed target $y$.</p>
+
+    <hr>
+
+    <!-- ═══════ INSTABILITY ═══════ -->
+    <h2>Pathologies of REINFORCE</h2>
+
+    <p>REINFORCE is theoretically sound but practically painful. Understanding its failure modes motivates every subsequent algorithm — actor-critic, TRPO, and PPO are all direct responses to specific REINFORCE pathologies.</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Pathology 1: Credit Assignment</div>
+      <p>Using the full-trajectory return $R(\tau)$ to weight every action ignores causality: an action at time $t$ can only affect future rewards, not past ones. This inflates variance unnecessarily. Addressed by reward-to-go and the advantage function (covered above).</p>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Pathology 2: High Variance</div>
+      <p>$G_t = \sum_{k\geq t}\gamma^{k-t}r_k$ is a Monte Carlo estimate aggregating noise over the full remaining trajectory. Gradient estimates are extremely noisy, requiring many samples per update. Addressed by learning a critic (actor-critic, below).</p>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Pathology 3: Sample Inefficiency</div>
+      <p>REINFORCE is strictly on-policy: after each update, all trajectories are discarded. Data cannot be reused. Addressed by importance sampling, which allows multiple gradient steps on the same batch of data (below).</p>
+    </div>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">Pathology 4: Unstable Updates</div>
+      <p>A gradient step that is "too large" can push the policy into a region where it performs much worse, and then the next batch of data comes from this bad policy, compounding the damage. Addressed by TRPO's KL constraint and PPO's clipping (below).</p>
+    </div>
+
+    <p>The rest of this page works through each fix in sequence.</p>
+
+    <hr>
+
+
+    <!-- ═══════ ON/OFF POLICY ═══════ -->
+    <h2>On-Policy vs. Off-Policy: Fixing Pathology 3 (Sample Inefficiency)</h2>
+
+    <p>The distinction between on-policy and off-policy is clearest when you look at what distribution the policy gradient expectation is taken over.</p>
+
+    <p>Recall the policy gradient:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}_{\color{red}{\tau \sim \pi_\theta}}\!\left[\sum_t \nabla_\theta \log \pi_\theta(a_t\mid s_t)\,\hat{A}_t\right]$$</div>
+
+    <p>The expectation is taken over trajectories drawn from <em>the current policy</em> $\pi_\theta$. This is the definition of <span class="term">on-policy<span class="tip">The data distribution used to compute the gradient matches the policy being updated. Cannot reuse old data.</span></span> learning: the data distribution must match the policy being updated. REINFORCE is on-policy.</p>
+
+    <p>The consequence: every time you update $\theta$, your old trajectories are stale — they came from a slightly different policy — and must be thrown away. You can only take <strong>one gradient step per batch of rollouts</strong>. This is extremely wasteful.</p>
+
+    <p><span class="term">Off-policy<span class="tip">Data can come from a different (e.g. older) policy. Requires importance sampling to correct the distribution mismatch.</span></span> learning allows data from any policy. But if our data came from $\pi_{\theta_\text{old}}$, we cannot use the gradient formula above directly — the expectation is under the wrong distribution. We need to correct for this mismatch.</p>
+
+    <h3>Importance Sampling: Turning Off-Policy Data into On-Policy Gradients</h3>
+
+    <p>The key identity is:</p>
+    <div class="math-block">$$\mathbb{E}_{x \sim p}[f(x)] = \mathbb{E}_{x \sim q}\!\left[\frac{p(x)}{q(x)}\,f(x)\right]$$</div>
+    <p>Proof: $\mathbb{E}_{x\sim q}\!\left[\frac{p(x)}{q(x)}f(x)\right] = \sum_x q(x)\frac{p(x)}{q(x)}f(x) = \sum_x p(x)f(x) = \mathbb{E}_{x\sim p}[f(x)]$. ∎</p>
+
+    <p>We apply this directly to the policy gradient. We want an expectation under $\pi_\theta$ but have data from $\pi_{\theta_\text{old}}$. Setting $p = \pi_\theta$ and $q = \pi_{\theta_\text{old}}$:</p>
+    <div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}_{\tau\sim\pi_\theta}\!\left[\nabla_\theta\log\pi_\theta(a_t\mid s_t)\,\hat{A}_t\right] = \mathbb{E}_{\tau\sim\pi_{\theta_\text{old}}}\!\left[\frac{\pi_\theta(a_t\mid s_t)}{\pi_{\theta_\text{old}}(a_t\mid s_t)}\,\nabla_\theta\log\pi_\theta(a_t\mid s_t)\,\hat{A}_t\right]$$</div>
+
+    <p>Define the <span class="term">policy ratio<span class="tip">$r_t(\theta) = \pi_\theta(a_t|s_t)/\pi_{\theta_\text{old}}(a_t|s_t)$. Equal to 1 when policies agree; drifts away from 1 as the policies diverge.</span></span>:</p>
+    <div class="math-block">$$r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_\text{old}}(a_t \mid s_t)}$$</div>
+
+    <p>This gives the <strong>surrogate objective</strong> we can optimize using old data:</p>
+    <div class="math-block">$$L(\theta) = \mathbb{E}_{\tau\sim\pi_{\theta_\text{old}}}\!\left[r_t(\theta)\,\hat{A}_t\right]$$</div>
+
+    <div class="callout callout-key">
+      <div class="callout-label">Why Off-Policy Means Multiple Gradient Steps</div>
+      <p>With the IS-corrected surrogate $L(\theta)$, we can compute $\nabla_\theta L(\theta)$ and take a gradient step, <em>then do it again</em> on the same batch of data. After each step $\theta$ changes, so $r_t(\theta)$ changes — but as long as the ratio stays near 1, the surrogate remains a good approximation of $J(\theta)$. This is why PPO takes $K$ epochs over each collected batch: <strong>$K$ gradient steps per rollout</strong> instead of just 1.</p>
+      <ul>
+        <li>$r_t > 1$: $\pi_\theta$ assigns higher probability to this action than $\pi_{\theta_\text{old}}$.</li>
+        <li>$r_t < 1$: $\pi_\theta$ assigns lower probability.</li>
+        <li>$r_t = 1$: the policies agree — no correction needed.</li>
+      </ul>
+    </div>
+
+    <hr>
+
+
+    <!-- ═══════ ACTOR-CRITIC ═══════ -->
+    <h2>Actor-Critic: Fixing Pathology 1 (Variance)</h2>
+
+    <p>REINFORCE uses the Monte Carlo return $G_t = \sum_{k\geq t}\gamma^{k-t}r_k$ as its signal. This is unbiased but high-variance — it accumulates noise over the entire remainder of the trajectory. The fix: replace $G_t$ with a <em>learned estimate</em> of the expected return. This is what the critic does.</p>
+
+    <p>We learn both a policy and a value function simultaneously. This gives an <span class="term">actor-critic<span class="tip">A family of RL algorithms where the actor (policy $\pi_\theta$) chooses actions and the critic (value function $V_\phi$) evaluates them, providing a lower-variance baseline.</span></span> method.</p>
 
     <ul>
       <li>The <strong>actor</strong> $\pi_\theta(a \mid s)$ chooses actions (parameters $\theta$).</li>
@@ -452,81 +667,193 @@
     <div class="algo">
       <div class="algo-title">Actor-Critic Training Loop</div>
       <pre>1. Collect trajectories with current policy π_θ
-2. Compute returns G_t
+2. Compute returns G_t = Σ_{k≥t} γ^{k-t} r_k
 3. Train critic: minimize (V_φ(s_t) - G_t)²
 4. Compute advantages: Â_t = G_t - V_φ(s_t)
 5. Update actor: θ ← θ + α ∇_θ Σ_t log π_θ(a_t|s_t) Â_t
 6. Repeat</pre>
     </div>
 
-    <hr>
+    <h3>Training the Critic: Bellman Optimality and TD Error</h3>
 
-    <!-- ═══════ INSTABILITY ═══════ -->
-    <h2>Why Vanilla Policy Gradient Can Be Unstable</h2>
+    <p>Is using Monte Carlo returns $G_t = \sum_{k\geq t}\gamma^{k-t}r_k$ the only way to train the critic? No — and in fact it is often not the best way. A more sample-efficient alternative comes from <span class="term">Bellman's optimality principle<span class="tip">The value of a state equals the immediate reward plus the discounted value of the next state. $V^\pi(s) = \mathbb{E}[r + \gamma V^\pi(s')]$. This recursive structure lets us bootstrap estimates from one step at a time.</span></span>.</p>
+  
+    <p>The value function satisfies a recursive <strong>Bellman equation</strong>:</p>
+    <div class="math-block">$$V^\pi(s_t) = \mathbb{E}\!\left[r_t + \gamma\,V^\pi(s_{t+1})\right]$$</div>
 
-    <p>Even with a critic, policy gradient methods can be unstable. The main issue: if we update the policy too aggressively, the new policy may behave very differently from the old one — but our data came from the old policy. The old data may no longer describe the new policy accurately, leading to bad updates that destabilize learning.</p>
+    <p>This says: the value of a state equals the immediate reward plus the discounted value of the next state. We can use this to define a one-step <span class="term">TD error<span class="tip">Temporal difference error: $\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$. Measures how much the observed one-step outcome differed from what the critic predicted.</span></span> (temporal difference error):</p>
+    <div class="math-block">$$\delta_t = r_t + \gamma\,V_\phi(s_{t+1}) - V_\phi(s_t)$$</div>
 
-    <div class="callout callout-warn">
-      <div class="callout-label">The Policy Update Problem</div>
-      <p>In supervised learning the dataset is fixed. In RL the data distribution depends on the policy. Large policy updates → distribution shift → unstable learning. We want to improve the policy without changing it too much at once.</p>
-    </div>
-
-    <hr>
-
-    <!-- ═══════ ON/OFF POLICY ═══════ -->
-    <h2>On-Policy and Off-Policy Learning</h2>
-
-    <p>An algorithm is <span class="term">on-policy<span class="tip">Learns from data collected by the current policy. Data cannot be reused after the policy changes.</span></span> if it learns from data collected by the current policy $\pi_\theta$. REINFORCE and PPO are on-policy.</p>
-
-    <p>An algorithm is <span class="term">off-policy<span class="tip">Can learn from data collected by a different (e.g. older) policy. More sample efficient but requires importance sampling corrections.</span></span> if it can learn from data collected by a different policy — for example, a replay buffer of old experiences. Q-learning and DQN are off-policy.</p>
-
-    <h3>Importance Sampling and the Policy Ratio</h3>
-    <p>When data comes from old policy $\pi_{\theta_\text{old}}$ but we want to update $\pi_\theta$, importance sampling corrects the mismatch. The key quantity is the <span class="term">policy ratio<span class="tip">$r_t(\theta) = \pi_\theta(a_t|s_t)/\pi_{\theta_\text{old}}(a_t|s_t)$. Measures how much more (or less) likely the new policy is to take the same action.</span></span>:</p>
-    <div class="math-block">$$r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_\text{old}}(a_t \mid s_t)}$$</div>
-
+    <p>If the critic is perfect, $\delta_t = 0$ always. In practice:</p>
     <ul>
-      <li>$r_t > 1$: new policy assigns higher probability to the action.</li>
-      <li>$r_t < 1$: new policy assigns lower probability.</li>
-      <li>$r_t = 1$: policies agree on this action.</li>
+      <li>$\delta_t > 0$: the outcome was <em>better</em> than the critic expected — it was optimistic about the future.</li>
+      <li>$\delta_t < 0$: the outcome was <em>worse</em> than expected — the critic was pessimistic.</li>
     </ul>
+
+    <p>We can train the critic to minimize this error directly, without waiting for a full trajectory:</p>
+    <div class="math-block">$$L_\text{critic}(\phi) = \bigl(V_\phi(s_t) - (r_t + \gamma\,V_\phi(s_{t+1}))\bigr)^2$$</div>
+
+    <p>This is called <strong>TD learning</strong>. It is more sample-efficient than Monte Carlo returns because we get a training signal from every single step, not just at the end of an episode. The TD error $\delta_t$ also turns out to be a one-step approximation of the advantage — it is the building block for GAE, which we will see shortly.</p>
 
     <hr>
 
     <!-- ═══════ TRPO ═══════ -->
-    <h2>Trust Regions: The Idea Behind TRPO</h2>
+    <h2>From Policy Gradient to TRPO to PPO</h2>
 
-    <p>One principled way to prevent large policy updates is to add a constraint on how much the new policy can differ from the old one, measured by <span class="term">KL divergence<span class="tip">$D_\text{KL}(p\|q) = \sum_x p(x)\log\frac{p(x)}{q(x)}$. Measures how different two distributions are. Zero when $p=q$.</span></span>:</p>
+    <p>We now have all the ingredients: policy gradient, reward-to-go, advantage, actor-critic. But vanilla policy gradient with a critic is still unstable. To understand why, and how PPO fixes it, we need to carefully trace where the gradient's assumptions break down. The story goes: <strong>policy gradient → importance sampling → ratio explodes → constrain the ratio → TRPO → simplify constraint → PPO</strong>.</p>
 
-    <div class="math-block">$$\max_\theta\;\mathbb{E}\!\left[r_t(\theta)\,\hat{A}_t\right] \quad\text{subject to}\quad D_\text{KL}(\pi_{\theta_\text{old}}\,\|\,\pi_\theta) \leq \delta$$</div>
+    <h3>Step 1 — The Hidden Assumption in Policy Gradient</h3>
 
-    <p>This is the idea behind <strong>TRPO</strong> (Trust Region Policy Optimization). It works well but is expensive to implement because enforcing the KL constraint requires second-order optimization. PPO is a simpler practical version of the same idea.</p>
+    <p>The policy gradient estimator is:</p>
+    <div class="math-block">$$\hat{g} = \mathbb{E}_{\tau \sim \pi_\theta}\!\left[\sum_t \nabla_\theta \log \pi_\theta(a_t\mid s_t)\,\hat{A}_t\right]$$</div>
+
+    <p>This is a <em>first-order local approximation</em> of $J(\theta)$. It assumes the gradient direction is meaningful in a neighborhood around the current $\theta$. But once we take a gradient step $\theta \to \theta'$, the policy changes, and so does the data distribution. If $\theta'$ is far from $\theta$, the sampled states and advantages are no longer representative, and the gradient direction becomes <strong>wrong under the new distribution</strong>.</p>
+
+    <h3>Step 2 — Why the Surrogate Still Breaks</h3>
+
+    <p>Even with importance sampling, the surrogate $L(\theta) = \mathbb{E}[r_t(\theta)\hat{A}_t]$ is only a valid approximation of $J(\theta)$ if the policies are close. If $\pi_\theta$ drifts far from $\pi_{\theta_\text{old}}$:</p>
+    <ul>
+      <li>The ratios $r_t(\theta)$ become very large or very small.</li>
+      <li>A few samples dominate the expectation — the estimate becomes extremely high variance.</li>
+      <li>The linear approximation of $J(\theta)$ breaks down entirely.</li>
+    </ul>
+
+    <p>So the problem is precise: <strong>the surrogate objective $L(\theta)$ can be exploited by making large policy updates that take it far outside the region where it accurately approximates $J(\theta)$.</strong></p>
+
+    <h3>Step 3 — TRPO: Enforce the Approximation Explicitly</h3>
+
+    <p>TRPO's answer is to make this constraint explicit. Maximize the surrogate, but stay close to the old policy in <span class="term">KL divergence<span class="tip">$D_\text{KL}(p\|q) = \mathbb{E}_p[\log\frac{p}{q}]$. Measures how different two distributions are. Zero iff $p = q$. Controls how much the action distribution changes.</span></span>:</p>
+
+    <div class="math-block">$$\max_\theta\;\mathbb{E}\!\left[r_t(\theta)\,\hat{A}_t\right] \quad\text{subject to}\quad \mathbb{E}_s\!\left[D_\text{KL}(\pi_{\theta_\text{old}}(\cdot\mid s)\,\|\,\pi_\theta(\cdot\mid s))\right] \leq \delta$$</div>
+
+    <p>The KL constraint guarantees that the new action distribution is close enough to the old one that the data is still valid and the ratios stay near 1.</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-label">TRPO in Practice: Expensive and Brittle</div>
+      <p>TRPO is theoretically elegant, but a practical nightmare. Enforcing the KL constraint exactly requires computing the <strong>Fisher information matrix</strong> of the policy — a second-order object. This in turn requires running <strong>conjugate gradient</strong> at every update step to approximately solve the constrained problem, followed by a line search to verify the constraint is satisfied. This is:</p>
+      <ul>
+        <li>Expensive — each update requires many additional forward passes through the network.</li>
+        <li>Brittle — conjugate gradient is sensitive to hyperparameters and can fail.</li>
+        <li>Hard to implement — requires custom second-order optimization infrastructure.</li>
+      </ul>
+      <p>In practice, TRPO often doesn't perform significantly better than simpler methods, and it is almost never used in modern robotics. It is important mainly as the theoretical motivation for PPO.</p>
+    </div>
 
     <hr>
 
     <!-- ═══════ PPO ═══════ -->
-    <h2>Proximal Policy Optimization (PPO)</h2>
+    <h2>PPO: A Practical Fix for Pathology 3</h2>
 
-    <p><span class="term">PPO<span class="tip">Proximal Policy Optimization. A popular, stable policy gradient algorithm that clips the policy ratio to prevent large updates.</span></span> keeps the policy close to the old one by <em>clipping</em> the policy ratio rather than solving a constrained optimization problem.</p>
+    <p>PPO keeps TRPO's insight — <em>don't move the policy too far</em> — but replaces the expensive KL constraint with a much simpler idea: directly clip the policy ratio so it can never deviate too far from 1.</p>
 
-    <p>A basic surrogate objective using old data:</p>
-    <div class="math-block">$$L(\theta) = \mathbb{E}\!\left[r_t(\theta)\,\hat{A}_t\right]$$</div>
+    <h3>Step 4 — Replace KL Constraint with Ratio Clipping</h3>
 
-    <p>If $r_t(\theta)$ becomes too large or too small, the update is too aggressive. PPO clips the ratio:</p>
+    <p>If the policy hasn't moved much, then $r_t(\theta) \approx 1$. So "small KL" is approximately equivalent to "ratio stays near 1." Instead of computing KL and enforcing it via conjugate gradient, we simply force:</p>
+    <div class="math-block">$$r_t(\theta) \in [1-\epsilon,\; 1+\epsilon]$$</div>
+
+    <p>Now consider what happens to the surrogate $L(\theta) = \mathbb{E}[r_t(\theta)\hat{A}_t]$ under the two advantage cases:</p>
+
+    <h4>Case 1 — Positive Advantage ($\hat{A}_t > 0$)</h4>
+    <p>The action was better than expected. We want to increase its probability, so we want $r_t > 1$. But if $r_t \gg 1$, the surrogate extrapolates way beyond the region where it is valid. We cap the gain:</p>
+    <div class="math-block">$$\text{use}\quad\min\!\bigl(r_t\,\hat{A}_t,\;(1+\epsilon)\,\hat{A}_t\bigr)$$</div>
+
+    <h4>Case 2 — Negative Advantage ($\hat{A}_t < 0$)</h4>
+    <p>The action was worse than expected. We want to decrease its probability, so $r_t < 1$. But $r_t \ll 1$ makes the surrogate exploit the mismatch in the wrong direction. We cap the decrease:</p>
+    <div class="math-block">$$\text{use}\quad\max\!\bigl(r_t\,\hat{A}_t,\;(1-\epsilon)\,\hat{A}_t\bigr)$$</div>
+
+    <h3>Step 5 — Combining Both Cases: The PPO Objective</h3>
+
+    <p>Taking the pessimistic (conservative) version of both cases simultaneously — we take the minimum of the unclipped and clipped terms, which always chooses the <em>lower</em> estimated improvement:</p>
 
     <div class="callout callout-key">
       <div class="callout-label">PPO Clipped Objective</div>
       <div class="math-block">$$L^\text{CLIP}(\theta) = \mathbb{E}\!\left[\min\!\left(r_t(\theta)\,\hat{A}_t,\;\operatorname{clip}(r_t(\theta),\,1-\epsilon,\,1+\epsilon)\,\hat{A}_t\right)\right]$$</div>
-      <p>The clipping keeps $r_t(\theta)$ inside $[1-\epsilon,\; 1+\epsilon]$. A typical value is $\epsilon = 0.2$, giving the range $[0.8,\; 1.2]$.</p>
+      <p>The "min" is the key: we take the <strong>pessimistic</strong> improvement estimate. If the ratio tries to push too far, we ignore the extra claimed gain. $\epsilon = 0.2$ (ratio range $[0.8, 1.2]$) is the standard setting.</p>
+    </div>
+    <!-- PPO clipping figure -->
+    <div class="viz-wrap">
+      <svg viewBox="0 0 660 220" xmlns="http://www.w3.org/2000/svg"
+           style="width:100%;max-width:660px;display:block;margin:0 auto;font-family:system-ui,sans-serif;">
+        <defs>
+          <marker id="ppo-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+            <polygon points="0 0,7 2.5,0 5" fill="#666"/>
+          </marker>
+        </defs>
+        <!-- Axes -->
+        <line x1="60" y1="170" x2="600" y2="170" stroke="#ccc" stroke-width="1.2" marker-end="url(#ppo-arr)"/>
+        <line x1="330" y1="20"  x2="330" y2="185" stroke="#ccc" stroke-width="1.2" marker-end="url(#ppo-arr)"/>
+        <text x="608" y="174" font-size="12" fill="#666">r_t(θ)</text>
+        <text x="335" y="18"  font-size="12" fill="#666">L</text>
+        <!-- r=1 marker -->
+        <line x1="330" y1="165" x2="330" y2="175" stroke="#666" stroke-width="1"/>
+        <text x="326" y="185" font-size="11" fill="#666">1</text>
+        <!-- clip boundaries -->
+        <line x1="220" y1="25" x2="220" y2="175" stroke="#fdba74" stroke-width="1" stroke-dasharray="4,3"/>
+        <line x1="440" y1="25" x2="440" y2="175" stroke="#fdba74" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="212" y="190" font-size="11" fill="#c2410c" text-anchor="middle">1−ε</text>
+        <text x="440" y="190" font-size="11" fill="#c2410c" text-anchor="middle">1+ε</text>
+
+        <!-- Panel A: A > 0 (left half) -->
+        <text x="155" y="38" font-size="12" font-weight="600" fill="#1e3a8a" text-anchor="middle">A &gt; 0 (good action)</text>
+        <!-- unclipped line (blue dashed) -->
+        <line x1="80"  y1="170" x2="220" y2="115" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="220" y1="115" x2="330" y2="85"  stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="330" y1="85"  x2="440" y2="55"  stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="440" y1="55"  x2="560" y2="18"  stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <!-- clipped objective (red solid) -->
+        <line x1="80"  y1="170" x2="220" y2="115" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="220" y1="115" x2="330" y2="85"  stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="330" y1="85"  x2="560" y2="85"  stroke="#dc2626" stroke-width="2.5"/>
+        <!-- flat label -->
+        <text x="490" y="78" font-size="11" fill="#dc2626">clipped (flat)</text>
+        <!-- arrow showing "gain capped" -->
+        <text x="490" y="40" font-size="11" fill="#93c5fd">unclipped</text>
+
+        <!-- Panel B: A < 0 (right side context / symmetric note) -->
+        <text x="505" y="38" font-size="12" font-weight="600" fill="#1e3a8a" text-anchor="middle">A &lt; 0 (bad action)</text>
+        <!-- Symmetric: slope goes upward (loss gets more negative = worse) -->
+        <!-- unclipped dashed -->
+        <line x1="80"  y1="100" x2="220" y2="130" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="220" y1="130" x2="330" y2="150" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="330" y1="150" x2="440" y2="170" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="440" y1="170" x2="560" y2="185" stroke="#93c5fd" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <!-- clipped solid: flat on left, slope on right -->
+        <line x1="80"  y1="150" x2="220" y2="150" stroke="#dc2626" stroke-width="2.5"/>
+        <line x1="220" y1="150" x2="330" y2="150" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="330" y1="150" x2="440" y2="170" stroke="#2563eb" stroke-width="2.5"/>
+        <line x1="440" y1="170" x2="560" y2="185" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="4,3"/>
+      </svg>
+      <div class="viz-caption"><strong>Blue:</strong> unclipped surrogate $r_t\hat{A}_t$. <strong>Red:</strong> PPO clipped objective. When $\hat{A}_t > 0$ (left): benefit is capped at $r_t = 1+\epsilon$ — we don't take credit for pushing the ratio further. When $\hat{A}_t < 0$ (right): penalty is capped at $r_t = 1-\epsilon$. The pessimistic min always takes the lower value, preventing exploitation.</div>
     </div>
 
-    <h3>Intuition for Clipping</h3>
-    <p>If an action had <strong>positive advantage</strong> ($\hat{A}_t > 0$): the action was better than expected, so we increase its probability — but PPO caps the increase. If an action had <strong>negative advantage</strong> ($\hat{A}_t < 0$): we decrease its probability — but PPO caps the decrease too. This prevents the policy from changing too drastically in one update, keeping training stable.</p>
+    <div class="callout callout-note">
+      <div class="callout-label">One-Sentence Takeaway</div>
+      <p>PPO is policy gradient + importance sampling, where we prevent the linearized surrogate from being exploited by forcing the probability ratio to stay near 1 via clipping — instead of an explicit KL constraint.</p>
+    </div>
 
-    <h3>Advantage Estimation</h3>
-    <p>A simple advantage estimate is $\hat{A}_t = G_t - V_\phi(s_t)$. Modern PPO uses <span class="term">GAE<span class="tip">Generalized Advantage Estimation. Mixes short-term and long-term advantage estimates using parameter $\lambda$ to control bias-variance tradeoff.</span></span> (Generalized Advantage Estimation):</p>
-    <div class="math-block">$$\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$$</div>
+    <h3>Advantage Estimation: Why TD Errors Work and GAE</h3>
+
+    <p>PPO needs advantage estimates $\hat{A}_t = Q^\pi(s_t,a_t) - V^\pi(s_t)$. We cannot compute this exactly because we don't know $Q^\pi$ — but the TD error $\delta_t$ is a natural one-step approximation.</p>
+
+    <h4>Why the TD Error Is an Unbiased One-Step Advantage Estimate</h4>
+
+    <p>Expand $Q^\pi(s_t,a_t)$ using the Bellman equation:</p>
+    <div class="math-block">$$Q^\pi(s_t,a_t) = \mathbb{E}\!\left[r_t + \gamma V^\pi(s_{t+1})\right]$$</div>
+    <p>So the one-step advantage is:</p>
+    <div class="math-block">$$A^\pi(s_t,a_t) = Q^\pi(s_t,a_t) - V^\pi(s_t) = \mathbb{E}\!\left[r_t + \gamma V^\pi(s_{t+1}) - V^\pi(s_t)\right] = \mathbb{E}[\delta_t]$$</div>
+    <p>The TD error $\delta_t = r_t + \gamma V_\phi(s_{t+1}) - V_\phi(s_t)$ is therefore an <em>unbiased</em> sample estimate of $A^\pi(s_t,a_t)$ (when $V_\phi = V^\pi$). It uses only one step of reward — much lower variance than the full return $G_t - V_\phi(s_t)$, at the cost of some bias when $V_\phi \neq V^\pi$.</p>
+
+    <p><span class="term">GAE<span class="tip">Generalized Advantage Estimation. Interpolates between 1-step TD (λ=0, low variance, biased) and full Monte Carlo (λ=1, unbiased, high variance).</span></span> (Generalized Advantage Estimation) smoothly interpolates by summing discounted TD errors:</p>
     <div class="math-block">$$\hat{A}_t = \sum_{l=0}^{\infty}(\gamma\lambda)^l\,\delta_{t+l}$$</div>
-    <p>Here $\lambda$ controls the bias-variance tradeoff. You do not need to memorize this formula — the key idea is that advantage estimation measures whether an action was better or worse than expected, stably enough to learn from.</p>
+    <p>$\lambda = 0$: pure one-step TD, lowest variance. $\lambda = 1$: full Monte Carlo minus baseline, unbiased. In practice $\lambda = 0.95$ balances both.</p>
+
+    <div class="callout callout-note">
+      <div class="callout-label">Reward Shaping: Making Sparse Rewards Dense</div>
+      <p>When rewards are sparse — the robot only gets a signal when it succeeds — the advantage estimate $\hat{A}_t$ is nearly zero almost everywhere. The policy receives almost no learning signal, and training stalls.</p>
+      <p>One solution is <strong>reward shaping</strong>: adding a potential-based term $\Phi(s)$ to the reward:</p>
+      <div class="math-block">$$\tilde{r}(s,a,s') = r(s,a,s') + \gamma\,\Phi(s') - \Phi(s)$$</div>
+      <p>When the potential $\Phi$ is well chosen — for example, negative distance to the goal — the shaped reward is dense even when the original reward is sparse. The telescoping structure guarantees that the shaped reward does not change the optimal policy: $\sum_t \gamma^t\tilde{r}_t = \sum_t \gamma^t r_t + \Phi(s_0) - \lim_{T\to\infty}\gamma^T\Phi(s_T)$, which differs from the original only by a constant in $\theta$. Choosing $\Phi$ well is therefore a safe and practical way to make RL work in sparse-reward robotics tasks.</p>
+    </div>
 
     <h3>The Full PPO Algorithm</h3>
 
@@ -537,21 +864,21 @@ Initialize critic V_φ(s)
 
 Repeat until convergence:
   ─── Data Collection ───────────────────────────────────
-  Collect N trajectories using current policy π_θ
-  Store: states s_t, actions a_t, rewards r_t,
-         old action probs π_old(a_t | s_t)
+  Collect N steps using current policy π_θ
+  Store: s_t, a_t, r_t, π_old(a_t|s_t), V_φ(s_t)
 
   ─── Compute Targets ───────────────────────────────────
-  Compute returns      G_t = Σ γ^k r_{t+k}
-  Compute TD errors    δ_t = r_t + γ V_φ(s_{t+1}) - V_φ(s_t)
-  Compute advantages   Â_t via GAE
+  Compute TD errors  δ_t = r_t + γ V_φ(s_{t+1}) - V_φ(s_t)
+  Compute advantages Â_t = Σ_l (γλ)^l δ_{t+l}   [GAE]
+  Compute returns    G_t = Â_t + V_φ(s_t)
 
   ─── Multiple Gradient Steps ───────────────────────────
   For K epochs over the collected data:
-    Compute ratio  r_t(θ) = π_θ(a_t|s_t) / π_old(a_t|s_t)
-    Actor loss   = -E[min(r_t·Â_t, clip(r_t,1-ε,1+ε)·Â_t)]
-    Critic loss  = E[(V_φ(s_t) - G_t)²]
-    Update θ and φ via gradient descent</pre>
+    r_t(θ) = π_θ(a_t|s_t) / π_old(a_t|s_t)
+    L_actor  = -E[min(r_t·Â_t, clip(r_t, 1-ε, 1+ε)·Â_t)]
+    L_critic =  E[(V_φ(s_t) - G_t)²]
+    Update θ ← θ - α ∇L_actor
+    Update φ ← φ - α ∇L_critic</pre>
     </div>
 
     <hr>
@@ -626,7 +953,7 @@ Repeat until convergence:
       <li>Watch the trained behavior and discuss what worked and what failed.</li>
     </ol>
 
-    <div class="callout callout-note">
+    <!-- <div class="callout callout-note">
       <div class="callout-label">Goal of the Lab</div>
       <p>You do not need to implement PPO from scratch. The goal is to understand what each component does:</p>
       <ul>
@@ -637,7 +964,7 @@ Repeat until convergence:
         <li>the PPO objective updates the policy carefully.</li>
       </ul>
       <p>By the end you should be able to explain what the policy learned and how the reward changed during training.</p>
-    </div>
+    </div> -->
 
   </div><!-- end .notes -->
 </main>
@@ -647,5 +974,103 @@ Repeat until convergence:
   <a href="week3.html">Week 3: Advanced Topics →</a>
 </footer>
 
+<script>
+/* ── Variance Animation ── */
+(function() {
+  const canvas = document.getElementById('varCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const PAD = 50, N = 30;  // number of episode samples to show
+
+  function seededRand(seed) {
+    let s = seed;
+    return function() {
+      s = (s * 1664525 + 1013904223) & 0xffffffff;
+      return (s >>> 0) / 0xffffffff;
+    };
+  }
+
+  let seed = Date.now();
+
+  function draw() {
+    const rand = seededRand(seed);
+    ctx.clearRect(0, 0, W, H);
+
+    // axes
+    const yMid = H / 2;
+    ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD, PAD); ctx.lineTo(PAD, H - PAD); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD, yMid); ctx.lineTo(W - PAD, yMid); ctx.stroke();
+
+    // axis labels
+    ctx.fillStyle = '#888'; ctx.font = '12px system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('Episode number', W / 2, H - 8);
+    ctx.save(); ctx.translate(14, H / 2); ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Gradient estimate', 0, 0); ctx.restore();
+    ctx.fillStyle = '#888'; ctx.textAlign = 'right';
+    ctx.fillText('+10', PAD - 4, PAD + 4);
+    ctx.fillText('0', PAD - 4, yMid + 4);
+    ctx.fillText('−10', PAD - 4, H - PAD + 4);
+
+    const xStep = (W - 2 * PAD) / (N - 1);
+    const scale = (H / 2 - PAD) / 12;
+
+    // individual episode estimates (blue dots + line)
+    const estimates = Array.from({length: N}, () => (rand() - 0.5) * 22);
+    ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 1;
+    ctx.beginPath();
+    estimates.forEach((v, i) => {
+      const x = PAD + i * xStep;
+      const y = yMid - v * scale;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    ctx.fillStyle = '#2563eb';
+    estimates.forEach((v, i) => {
+      const x = PAD + i * xStep;
+      const y = yMid - v * scale;
+      ctx.beginPath(); ctx.arc(x, y, 4, 0, 2 * Math.PI); ctx.fill();
+    });
+
+    // running average (red line)
+    ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    let sum = 0;
+    estimates.forEach((v, i) => {
+      sum += v;
+      const avg = sum / (i + 1);
+      const x = PAD + i * xStep;
+      const y = yMid - avg * scale;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // true gradient = 0 (orange dashed)
+    ctx.strokeStyle = '#f97316'; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(PAD, yMid); ctx.lineTo(W - PAD, yMid); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // legend
+    ctx.font = '12px system-ui'; ctx.textAlign = 'left';
+    const lx = W - PAD - 160, ly = PAD + 10;
+    ctx.fillStyle = '#2563eb'; ctx.fillRect(lx, ly, 16, 3);
+    ctx.beginPath(); ctx.arc(lx + 8, ly + 1, 4, 0, 2*Math.PI); ctx.fill();
+    ctx.fillStyle = '#1a1a1a'; ctx.fillText('Single episode', lx + 22, ly + 5);
+
+    ctx.fillStyle = '#dc2626'; ctx.fillRect(lx, ly + 18, 16, 3); ctx.fillStyle = '#1a1a1a';
+    ctx.fillText('Running average', lx + 22, ly + 23);
+
+    ctx.fillStyle = '#f97316'; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(lx, ly + 36); ctx.lineTo(lx + 16, ly + 36); ctx.strokeStyle='#f97316'; ctx.lineWidth=2; ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = '#1a1a1a'; ctx.fillText('True gradient = 0', lx + 22, ly + 40);
+  }
+
+  window.resetVar = function() { seed = Date.now(); draw(); };
+  draw();
+})();
+</script>
 </body>
 </html>
