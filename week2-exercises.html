@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Week 2 Exercises — Learning for Robotics</title>
+
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        packages: {'[+]': ['ams']}
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #fafafa;
+      --text: #1a1a1a;
+      --muted: #666;
+      --accent: #2563eb;
+      --border: #e0e0e0;
+      --card-bg: #fff;
+      --def-bg: #eff6ff;   --def-border: #93c5fd;
+      --key-bg: #fefce8;   --key-border: #fde047;
+      --warn-bg: #fff7ed;  --warn-border: #fdba74;
+      --note-bg: #f0fdf4;  --note-border: #86efac;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      font-size: 16px;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    header, main, footer { max-width: 740px; margin: 0 auto; padding: 0 24px; }
+
+    header {
+      padding-top: 48px; padding-bottom: 36px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .breadcrumb { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+    .breadcrumb a { color: var(--muted); }
+    .breadcrumb a:hover { color: var(--accent); }
+
+    .week-tag {
+      display: inline-block; font-size: 12px; font-weight: 600;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 8px;
+    }
+
+    h1 { font-size: clamp(22px,4vw,32px); font-weight: 700; letter-spacing: -.02em; line-height: 1.25; }
+
+    main { padding-top: 48px; padding-bottom: 80px; }
+
+    footer {
+      padding-top: 32px; padding-bottom: 48px;
+      border-top: 1px solid var(--border);
+      color: var(--muted); font-size: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+
+    /* ── Headings ── */
+    .notes h2 {
+      font-size: 21px; font-weight: 700; letter-spacing: -.01em;
+      margin-top: 48px; margin-bottom: 14px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+    .notes h2:first-child { margin-top: 0; }
+    .notes h3 { font-size: 17px; font-weight: 600; margin-top: 32px; margin-bottom: 10px; color: #1e3a8a; }
+    .notes h4 {
+      font-size: 14px; font-weight: 600; margin-top: 16px; margin-bottom: 4px;
+      color: var(--muted); text-transform: uppercase; letter-spacing: .05em;
+    }
+    .notes p { margin-bottom: 14px; }
+    .notes ul, .notes ol { padding-left: 22px; margin-bottom: 14px; }
+    .notes li { margin-bottom: 6px; }
+    .notes strong { font-weight: 700; }
+    .notes em { font-style: italic; }
+    .notes hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+    /* ── Math ── */
+    .math-block { overflow-x: auto; margin: 14px 0; font-size: 1.05em; }
+
+    /* ── Callouts ── */
+    .callout { border-radius: 8px; padding: 14px 18px; margin: 16px 0; border-left: 4px solid; }
+    .callout .callout-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout p:last-child, .callout ul:last-child, .callout ol:last-child { margin-bottom: 0; }
+    .callout-note { background: var(--note-bg); border-color: var(--note-border); }
+    .callout-note .callout-label { color: #15803d; }
+
+    /* ── Exercise blocks ── */
+    .ex-block {
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 20px 24px; margin: 24px 0; background: var(--card-bg);
+    }
+    .ex-block h3 { margin-top: 0; margin-bottom: 12px; color: var(--accent); font-size: 16px; }
+    .ex-block h4 { margin-top: 14px; margin-bottom: 6px; }
+
+    /* Solutions hidden by default */
+    .solution { display: none; margin-top: 16px; }
+    .solution.visible { display: block; }
+
+    /* ── Toggle switch ── */
+    .toggle-bar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px; margin-bottom: 32px;
+      background: var(--key-bg); border: 1px solid var(--key-border); border-radius: 8px;
+    }
+    .toggle-bar span { font-size: 14px; font-weight: 600; color: #a16207; }
+    #solLabel { font-size: 13px; color: var(--muted); font-weight: 400; }
+
+    .sol-toggle { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+    .sol-toggle input { opacity: 0; width: 0; height: 0; }
+    .sol-slider {
+      position: absolute; cursor: pointer; inset: 0;
+      background: #ccc; border-radius: 24px; transition: .2s;
+    }
+    .sol-slider::before {
+      content: ""; position: absolute;
+      width: 18px; height: 18px; left: 3px; bottom: 3px;
+      background: white; border-radius: 50%; transition: .2s;
+    }
+    .sol-toggle input:checked + .sol-slider { background: var(--accent); }
+    .sol-toggle input:checked + .sol-slider::before { transform: translateX(20px); }
+
+    /* ── Part header pill ── */
+    .part-header {
+      display: flex; align-items: center; gap: 14px; margin: 40px 0 8px;
+    }
+    .part-pill {
+      display: inline-block; padding: 3px 12px; border-radius: 99px;
+      font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+      background: var(--accent); color: #fff;
+    }
+    .part-title { font-size: 20px; font-weight: 700; }
+    .part-desc { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="breadcrumb">
+    <a href="index.html">Learning for Robotics</a> /
+    <a href="week2.html">Week 2</a> / Exercises
+  </div>
+  <div class="week-tag">Week 2 · Exercises</div>
+  <h1>Reinforcement Learning — Exercises</h1>
+</header>
+
+<main>
+  <div class="notes">
+
+    <!-- Solution toggle -->
+    <!-- <div class="toggle-bar">
+      <span>Show Solutions</span>
+      <label class="sol-toggle" title="Toggle solutions">
+        <input type="checkbox" id="solToggle" onchange="toggleSolutions(this.checked)">
+        <span class="sol-slider"></span>
+      </label>
+      <span id="solLabel">Solutions hidden</span>
+    </div> -->
+
+    <!-- ── PART I ── -->
+    <div class="part-header">
+      <span class="part-pill">Part I</span>
+      <span class="part-title">Check Your Understanding</span>
+    </div>
+    <p class="part-desc">Short questions to make sure the basic vocabulary and definitions are clear.</p>
+
+    <!-- Ex 1 -->
+    <div class="ex-block">
+      <h3>Exercise 1 — MDP Components</h3>
+      <p>An MDP is written as $(\mathcal{S}, \mathcal{A}, P, r, \gamma)$. For each object below, explain what it means in words, then give one robotics example.</p>
+      <ol>
+        <li>$\mathcal{S}$</li>
+        <li>$\mathcal{A}$</li>
+        <li>$P(s' \mid s, a)$</li>
+        <li>$r(s, a)$</li>
+        <li>$\gamma$</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li><strong>$\mathcal{S}$</strong> is the state space — the set of possible situations the robot can be in. Example: for a walking robot, the state might include body position, velocity, and joint angles.</li>
+            <li><strong>$\mathcal{A}$</strong> is the action space — the set of possible actions the robot can take. Example: motor torques sent to the robot's joints.</li>
+            <li><strong>$P(s' \mid s, a)$</strong> is the transition probability — how likely the robot is to reach state $s'$ after taking action $a$ in state $s$. Example: if a robot pushes an object, the object may move to a new location depending on friction and force.</li>
+            <li><strong>$r(s, a)$</strong> is the reward function — a number telling the robot how good or bad an action was. Example: positive reward for moving forward, negative reward for falling.</li>
+            <li><strong>$\gamma \in [0,1)$</strong> is the discount factor — it controls how much the robot values future rewards relative to immediate ones. Example: if $\gamma$ is close to $1$, the robot cares a lot about long-term walking performance.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 2 -->
+    <div class="ex-block">
+      <h3>Exercise 2 — Value, Q-Value, and Advantage</h3>
+      <p>Explain each quantity in words.</p>
+      <ol>
+        <li>$V^\pi(s)$</li>
+        <li>$Q^\pi(s, a)$</li>
+        <li>$A^\pi(s, a)$</li>
+      </ol>
+      <p>Then answer:</p>
+      <ol start="4">
+        <li>If $A^\pi(s,a) > 0$, what should happen to the probability of taking action $a$ in state $s$?</li>
+        <li>If $A^\pi(s,a) < 0$, what should happen?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>$V^\pi(s)$ is the value function: expected future reward if we start in state $s$ and follow policy $\pi$.</li>
+            <li>$Q^\pi(s,a)$ is the action-value function: expected future reward if we start in state $s$, take action $a$, and then follow $\pi$ afterward.</li>
+            <li>$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$ is the advantage function: how much better or worse action $a$ is compared to the average action in state $s$.</li>
+            <li>If $A^\pi(s,a) > 0$, the action was better than expected. The policy should <strong>increase</strong> the probability of taking $a$ in $s$.</li>
+            <li>If $A^\pi(s,a) < 0$, the action was worse than expected. The policy should <strong>decrease</strong> the probability of taking $a$ in $s$.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 3 -->
+    <div class="ex-block">
+      <h3>Exercise 3 — Reward-to-Go</h3>
+      <p>A trajectory receives rewards $r_0 = 1$, $r_1 = 2$, $r_2 = 3$. Assume $\gamma = 1$.</p>
+      <ol>
+        <li>What is the full trajectory return $R(\tau)$?</li>
+        <li>What is the reward-to-go $G_0$?</li>
+        <li>What is the reward-to-go $G_1$?</li>
+        <li>What is the reward-to-go $G_2$?</li>
+        <li>Why is reward-to-go better than assigning the full trajectory reward to every action?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li><div class="math-block">$$R(\tau) = r_0 + r_1 + r_2 = 1 + 2 + 3 = 6$$</div></li>
+            <li>$G_0 = r_0 + r_1 + r_2 = 6$</li>
+            <li>$G_1 = r_1 + r_2 = 5$</li>
+            <li>$G_2 = r_2 = 3$</li>
+            <li>An action at time $t$ cannot affect rewards that happened before time $t$. Reward-to-go credits each action only with the rewards it could have caused, which reduces noise in the gradient estimate.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 4 -->
+    <div class="ex-block">
+      <h3>Exercise 4 — Baselines</h3>
+      <p>In policy gradient we often replace $G_t$ with $G_t - b(s_t)$, where $b(s_t)$ is a baseline.</p>
+      <ol>
+        <li>Does subtracting a baseline change the expected policy gradient?</li>
+        <li>Why is it allowed?</li>
+        <li>What does it help with?</li>
+        <li>What is the most common baseline used in actor-critic methods?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>No — subtracting a baseline that depends only on the state does not change the expected gradient.</li>
+            <li>Because:
+              <div class="math-block">$$\mathbb{E}_{a \sim \pi(\cdot \mid s)}\!\bigl[\nabla_\theta \log \pi_\theta(a \mid s)\,b(s)\bigr] = 0$$</div>
+              The baseline is a constant with respect to the action, and the policy probabilities sum to 1.
+            </li>
+            <li>It reduces variance. The gradient estimate becomes less noisy.</li>
+            <li>The value function: $b(s_t) = V^\pi(s_t)$. Then $G_t - V^\pi(s_t)$ is an estimate of the advantage $A^\pi(s_t,a_t)$.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 5 -->
+    <div class="ex-block">
+      <h3>Exercise 5 — Importance Sampling Ratio</h3>
+      <p>Suppose data was collected under $\pi_{\theta_\text{old}}$, but we want to update $\pi_\theta$. The policy ratio is:
+        <div class="math-block">$$r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_\text{old}}(a_t \mid s_t)}$$</div>
+      </p>
+      <p>Explain what each case means:</p>
+      <ol>
+        <li>$r_t(\theta) = 1$</li>
+        <li>$r_t(\theta) > 1$</li>
+        <li>$r_t(\theta) < 1$</li>
+        <li>Why can very large or very small ratios be dangerous?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>The new and old policies assign the same probability to action $a_t$ in state $s_t$.</li>
+            <li>The new policy assigns <em>higher</em> probability to that action than the old policy did.</li>
+            <li>The new policy assigns <em>lower</em> probability to that action than the old policy did.</li>
+            <li>Very large or small ratios mean the new policy is very different from the old one. Old data may no longer represent what the new policy would do — importance sampling estimates become high-variance or misleading.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 6 -->
+    <div class="ex-block">
+      <h3>Exercise 6 — On-Policy versus Off-Policy</h3>
+      <p>Explain the difference between <strong>on-policy</strong> and <strong>off-policy</strong> learning, then classify each example.</p>
+      <ol>
+        <li>You collect data from the current policy and immediately update that same policy.</li>
+        <li>You train on demonstrations collected from a human expert.</li>
+        <li>You use trajectories from an older version of your policy to update the newest policy.</li>
+        <li>You collect data from a more exploratory policy but use it to improve a less random policy.</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <p><strong>On-policy</strong>: learns from data collected by the same policy it is currently updating.<br>
+          <strong>Off-policy</strong>: learns from data collected by a different policy.</p>
+          <ol>
+            <li>On-policy.</li>
+            <li>Off-policy — data came from a human expert, not the current policy.</li>
+            <li>Off-policy — data came from an older version of the policy.</li>
+            <li>Off-policy — the behavior policy differs from the target policy being updated.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ── PART II ── -->
+    <div class="part-header">
+      <span class="part-pill">Part II</span>
+      <span class="part-title">RL Thinking Questions</span>
+    </div>
+    <p class="part-desc">Conceptual questions about why reinforcement learning is different from supervised learning and why algorithms like PPO are designed the way they are.</p>
+
+    <!-- Ex 7 -->
+    <div class="ex-block">
+      <h3>Exercise 7 — Why On-Policy REINFORCE Is Sample Inefficient</h3>
+      <p>Suppose you run REINFORCE: collect a batch of trajectories under $\pi_{\theta_\text{old}}$, compute a gradient update, and get a new policy $\pi_\theta$.</p>
+      <ol>
+        <li>Why are the trajectories technically "old" after the update?</li>
+        <li>In pure on-policy REINFORCE, why would we throw away those trajectories after one gradient step?</li>
+        <li>Why is this sample inefficient?</li>
+        <li>Why might we still want to reuse the data for a few gradient steps in practice?</li>
+        <li>What can go wrong if we reuse it for too long?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>The trajectories were generated by $\pi_{\theta_\text{old}}$, not the updated policy $\pi_\theta$.</li>
+            <li>The policy gradient estimator assumes data comes from the policy being updated. After one update, that is no longer exactly true.</li>
+            <li>Collecting trajectories is expensive — it requires running a simulator or real robot. Discarding data after one gradient step wastes that effort.</li>
+            <li>If the new policy is still close to the old one, the old data is still approximately valid and gives more signal per rollout.</li>
+            <li>As the policy diverges from the one that collected the data, importance sampling ratios can explode. Gradient estimates become noisy or misleading, and the policy can destabilize. This is exactly why PPO clips the ratio.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 8 -->
+    <div class="ex-block">
+      <h3>Exercise 8 — Distribution Shift Thought Experiment</h3>
+      <p>The old policy $\pi_{\theta_\text{old}}$ is cautious and visits safe states. The new policy $\pi_\theta$ is more aggressive and visits different states. Suppose you compute an update for $\pi_\theta$ using mostly trajectories from $\pi_{\theta_\text{old}}$.</p>
+      <ol>
+        <li>What distribution were the states and actions sampled from?</li>
+        <li>What distribution do we actually care about improving?</li>
+        <li>Why might old trajectories give a poor estimate of how the new policy behaves?</li>
+        <li>What changes besides the action probabilities when the policy changes?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>States and actions were sampled from the distribution induced by $\pi_{\theta_\text{old}}$.</li>
+            <li>We care about improving performance under the new policy $\pi_\theta$.</li>
+            <li>The new policy may take different actions and therefore visit different states. Old data may not contain examples of what happens under the new policy.</li>
+            <li>The <em>state distribution</em> changes too. Actions affect future states, so changing the policy changes not only which actions are chosen, but also which states the agent visits later.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 9 -->
+    <div class="ex-block">
+      <h3>Exercise 9 — Why Replay Buffers Need Fresh Data</h3>
+      <p>In supervised learning, we can train on the same dataset for many epochs. In RL, suppose we keep a replay buffer of old trajectories.</p>
+      <ol>
+        <li>Why is old data more dangerous in RL than in supervised learning?</li>
+        <li>What happens if the buffer contains mostly data from policies very different from the current policy?</li>
+        <li>How can importance sampling help?</li>
+        <li>Why doesn't importance sampling completely solve the problem?</li>
+        <li>Why do we need to collect fresh data after some number of updates?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>In supervised learning the data distribution is fixed. In RL the data distribution depends on the policy — if the policy changes, the states and actions in the buffer may no longer match.</li>
+            <li>The current policy is trained on states and actions it no longer visits. Gradients may not reflect what the current policy needs.</li>
+            <li>Importance sampling reweights old data with ratios $r_t(\theta) = \pi_\theta / \pi_{\theta_\text{old}}$, correcting for the mismatch.</li>
+            <li>Importance sampling can have high variance. If the ratio is very large, a few samples can dominate the estimate and make optimization unstable.</li>
+            <li>The current policy induces a new state distribution. Fresh data tells us what states it actually visits and what rewards it receives — information old data cannot provide.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 10 -->
+    <div class="ex-block">
+      <h3>Exercise 10 — When Policy Gradients Struggle</h3>
+      <p>Give an example of a robotics task where vanilla policy gradient methods would likely struggle. Your answer should address:</p>
+      <ol>
+        <li>Whether the reward is dense or sparse.</li>
+        <li>What exploration requires.</li>
+        <li>Why the gradient estimate might have high variance.</li>
+        <li>Why many trajectories may be needed.</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <p><strong>Example:</strong> a robot must insert a key into a lock.</p>
+          <ol>
+            <li>The reward is sparse — the robot only receives reward when the key is successfully inserted.</li>
+            <li>Exploration is difficult because the robot must discover a precise sequence: reach the key, grasp it, align it, insert it, and turn it.</li>
+            <li>The gradient estimate has high variance because most trajectories receive zero reward. Occasionally a lucky trajectory gets reward, and the update depends heavily on that rare sample.</li>
+            <li>Many trajectories are needed because successful behavior is rare. Without enough successful examples, the policy has almost no learning signal.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 11 -->
+    <div class="ex-block">
+      <h3>Exercise 11 — Why Small Policy Updates Matter</h3>
+      <p>Suppose for some state-action pair $\pi_{\theta_\text{old}}(a \mid s) = 0.2$ and after an update $\pi_\theta(a \mid s) = 0.9$. Assume this action had positive advantage.</p>
+      <ol>
+        <li>What is the importance sampling ratio $r_t(\theta)$?</li>
+        <li>Why might this update be too aggressive?</li>
+        <li>What does TRPO try to prevent?</li>
+        <li>What does PPO do instead?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li><div class="math-block">$$r_t(\theta) = \frac{0.9}{0.2} = 4.5$$</div></li>
+            <li>The action went from 20% likely to 90% likely. The data was collected when the action was uncommon, so the old samples may not justify such a large change.</li>
+            <li>TRPO constrains the KL divergence between the old and new policies, keeping the update in a trust region where old data remains valid.</li>
+            <li>PPO clips the policy ratio so it stays in $[1-\epsilon, 1+\epsilon]$, preventing extra objective credit for very large probability changes.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 12 -->
+    <div class="ex-block">
+      <h3>Exercise 12 — PPO Clipping Logic</h3>
+      <p>The PPO clipped objective is:</p>
+      <div class="math-block">$$L^\text{CLIP}(\theta) = \mathbb{E}\!\left[\min\!\left(r_t(\theta)\hat{A}_t,\;\text{clip}(r_t(\theta),1-\epsilon,1+\epsilon)\hat{A}_t\right)\right]$$</div>
+      <p>Suppose $\epsilon = 0.2$, so the ratio is clipped to $[0.8, 1.2]$.</p>
+      <ol>
+        <li>If $\hat{A}_t > 0$, what does the policy want to do to the probability of the action?</li>
+        <li>If $\hat{A}_t > 0$ and $r_t = 1.5$, what clipped ratio is used?</li>
+        <li>Why should PPO not keep rewarding increases beyond $1.2$?</li>
+        <li>If $\hat{A}_t < 0$, what does the policy want to do?</li>
+        <li>If $\hat{A}_t < 0$ and $r_t = 0.5$, what clipped ratio is used?</li>
+        <li>Why is the $\min$ used in the PPO objective rather than just the clipped expression?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>The action was better than expected. The policy wants to <strong>increase</strong> its probability (push $r_t$ above 1).</li>
+            <li>$r_t = 1.5 > 1.2$, so the clipped ratio is $1.2$.</li>
+            <li>Encouraging further increases would push the new policy far from the old one. The data came from the old policy, so very large changes may be unreliable.</li>
+            <li>The action was worse than expected. The policy wants to <strong>decrease</strong> its probability (push $r_t$ below 1).</li>
+            <li>$r_t = 0.5 < 0.8$, so the clipped ratio is $0.8$.</li>
+            <li>The $\min$ makes PPO pessimistic: it takes the lower of the unclipped and clipped objectives. The policy cannot gain extra objective value by moving far from the old policy in either direction.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 13 -->
+    <div class="ex-block">
+      <h3>Exercise 13 — The Core Assumption Behind TRPO and PPO</h3>
+      <p>In one or two sentences: what is the fundamental assumption that policy gradient methods rely on, and what do TRPO and PPO try to enforce?</p>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <p>Policy gradient methods rely on the assumption that the gradient computed from recent trajectories is a useful local direction for improving the policy — which is only trustworthy if the policy-induced data distribution does not change too much.</p>
+          <p>TRPO and PPO enforce conservative policy updates so the new policy remains close enough to the old one that old trajectories and advantage estimates are still meaningful.</p>
+        </div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- ── PART III ── -->
+    <div class="part-header">
+      <span class="part-pill">Part III</span>
+      <span class="part-title">Scaffolded Derivation Questions</span>
+    </div>
+    <p class="part-desc">Walk through the key mathematical steps behind policy gradients, baselines, advantages, importance sampling, and PPO. These mirror the derivations in the lecture notes.</p>
+
+    <!-- Ex 14 -->
+    <div class="ex-block">
+      <h3>Exercise 14 — Deriving the Policy Gradient with the Log Trick</h3>
+      <p>We want to maximize $J(\theta) = \mathbb{E}_{\tau \sim p_\theta(\tau)}[R(\tau)] = \sum_\tau p_\theta(\tau)R(\tau)$.</p>
+      <ol>
+        <li>Take $\nabla_\theta J(\theta)$.</li>
+        <li>Use the identity $\nabla_\theta p_\theta(\tau) = p_\theta(\tau)\nabla_\theta \log p_\theta(\tau)$ to rewrite the gradient.</li>
+        <li>Convert the sum back into an expectation.</li>
+        <li>Recall $p_\theta(\tau) = p(s_0)\prod_{t}\pi_\theta(a_t \mid s_t)P(s_{t+1} \mid s_t, a_t)$. Which terms depend on $\theta$?</li>
+        <li>Show that $\nabla_\theta \log p_\theta(\tau) = \sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)$.</li>
+        <li>Write the final basic policy gradient expression.</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li><div class="math-block">$$\nabla_\theta J(\theta) = \sum_\tau \nabla_\theta p_\theta(\tau)\,R(\tau)$$</div></li>
+            <li>Use $\nabla_\theta p_\theta(\tau) = p_\theta(\tau)\nabla_\theta \log p_\theta(\tau)$:
+              <div class="math-block">$$\nabla_\theta J(\theta) = \sum_\tau p_\theta(\tau)\,\nabla_\theta \log p_\theta(\tau)\,R(\tau)$$</div>
+            </li>
+            <li><div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim p_\theta}\!\bigl[\nabla_\theta \log p_\theta(\tau)\,R(\tau)\bigr]$$</div></li>
+            <li>Only the policy terms $\pi_\theta(a_t \mid s_t)$ depend on $\theta$. The initial distribution $p(s_0)$ and transition probabilities $P(s_{t+1} \mid s_t, a_t)$ do not.</li>
+            <li>Take logs: $\log p_\theta(\tau) = \log p(s_0) + \sum_t \log \pi_\theta(a_t \mid s_t) + \sum_t \log P(s_{t+1} \mid s_t, a_t)$. The $\theta$-free terms vanish under $\nabla_\theta$, giving:
+              <div class="math-block">$$\nabla_\theta \log p_\theta(\tau) = \sum_{t=0}^{T-1}\nabla_\theta \log \pi_\theta(a_t \mid s_t)$$</div>
+            </li>
+            <li><div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim p_\theta}\!\left[\left(\sum_{t=0}^{T-1}\nabla_\theta \log \pi_\theta(a_t \mid s_t)\right)R(\tau)\right]$$</div>
+            This is the basic REINFORCE policy gradient.
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 15 -->
+    <div class="ex-block">
+      <h3>Exercise 15 — From Full Return to Reward-to-Go</h3>
+      <p>The basic policy gradient uses $R(\tau)$ for every action. Define the reward-to-go $G_t = \sum_{k=t}^{T-1}\gamma^{k-t}r_k$.</p>
+      <ol>
+        <li>For action $a_t$, which rewards can it affect?</li>
+        <li>Which rewards can it not affect?</li>
+        <li>Why should we replace $R(\tau)$ with $G_t$?</li>
+        <li>Write the reward-to-go policy gradient expression.</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>Action $a_t$ can affect rewards $r_t, r_{t+1}, r_{t+2}, \ldots$ — rewards at time $t$ and later.</li>
+            <li>It cannot affect rewards $r_0, r_1, \ldots, r_{t-1}$ — rewards that already happened.</li>
+            <li>Earlier rewards are irrelevant to whether action $a_t$ was good. Removing them reduces variance without introducing bias.</li>
+            <li><div class="math-block">$$\nabla_\theta J(\theta) = \mathbb{E}\!\left[\sum_{t=0}^{T-1}\nabla_\theta \log \pi_\theta(a_t \mid s_t)\,G_t\right]$$</div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 16 -->
+    <div class="ex-block">
+      <h3>Exercise 16 — From Baseline to Advantage</h3>
+      <p>Start from the reward-to-go policy gradient and subtract a baseline $G_t - b(s_t)$.</p>
+      <ol>
+        <li>Why must $b(s_t)$ not depend on the action $a_t$?</li>
+        <li>Set $b(s_t) = V^\pi(s_t)$. What does $G_t - V^\pi(s_t)$ estimate?</li>
+        <li>What is the advantage function $A^\pi(s,a)$?</li>
+        <li>Write the policy gradient using the advantage.</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>If the baseline depends on the action, it can change the expected policy gradient. When $b$ depends only on the state:
+              <div class="math-block">$$\mathbb{E}_{a \sim \pi(\cdot \mid s)}\!\bigl[\nabla_\theta \log \pi_\theta(a \mid s)\,b(s)\bigr] = 0$$</div>
+              so subtracting it leaves the expectation unchanged.
+            </li>
+            <li>$G_t - V^\pi(s_t)$ estimates how much better or worse the observed return was than the expected return from state $s_t$. This is the advantage.</li>
+            <li><div class="math-block">$$A^\pi(s,a) = Q^\pi(s,a) - V^\pi(s)$$</div></li>
+            <li><div class="math-block">$$\nabla_\theta J(\theta) \approx \mathbb{E}\!\left[\sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)\,\hat{A}_t\right]$$</div></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 17 -->
+    <div class="ex-block">
+      <h3>Exercise 17 — Importance Sampling and the PPO Ratio</h3>
+      <p>The importance sampling identity states $\mathbb{E}_{x \sim p}[f(x)] = \mathbb{E}_{x \sim q}\!\left[\frac{p(x)}{q(x)}f(x)\right]$.</p>
+      <ol>
+        <li>In PPO, what plays the role of $p$?</li>
+        <li>What plays the role of $q$?</li>
+        <li>Write the policy ratio $r_t(\theta)$.</li>
+        <li>Why does this ratio allow us to use data from the old policy?</li>
+        <li>Why can this ratio become dangerous?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>The new policy $\pi_\theta$ plays the role of $p$.</li>
+            <li>The old policy $\pi_{\theta_\text{old}}$ plays the role of $q$.</li>
+            <li><div class="math-block">$$r_t(\theta) = \frac{\pi_\theta(a_t \mid s_t)}{\pi_{\theta_\text{old}}(a_t \mid s_t)}$$</div></li>
+            <li>The ratio reweights the old data to correct for the fact that it was sampled under a different policy. This lets us evaluate or improve the new policy without re-collecting trajectories.</li>
+            <li>If the ratio is very large or small, a few samples can dominate the gradient estimate, causing high variance and potentially a policy update that is too large.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 18 -->
+    <div class="ex-block">
+      <h3>Exercise 18 — Deriving the PPO Clipped Objective</h3>
+      <p>Start from the importance-weighted objective $L(\theta) = \mathbb{E}[r_t(\theta)\hat{A}_t]$. PPO clips the ratio to $\text{clip}(r_t(\theta), 1-\epsilon, 1+\epsilon)$.</p>
+      <ol>
+        <li>If $\hat{A}_t > 0$, do we want $r_t$ to increase or decrease?</li>
+        <li>Why should we stop rewarding the objective once $r_t > 1+\epsilon$?</li>
+        <li>If $\hat{A}_t < 0$, do we want $r_t$ to increase or decrease?</li>
+        <li>Why should we stop rewarding the objective once $r_t < 1-\epsilon$?</li>
+        <li>Explain why PPO uses $\min(r_t \hat{A}_t,\;\text{clip}(r_t,1{-}\epsilon,1{+}\epsilon)\hat{A}_t)$ rather than just the clipped expression alone.</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>If $\hat{A}_t > 0$, the action was better than expected, so we want to increase its probability — push $r_t$ above 1.</li>
+            <li>Rewarding further increases beyond $1+\epsilon$ would encourage the policy to move too far from the old policy, where the data may no longer be valid.</li>
+            <li>If $\hat{A}_t < 0$, the action was worse than expected, so we want to decrease its probability — push $r_t$ below 1.</li>
+            <li>Rewarding further decreases below $1-\epsilon$ would again push the policy too far, making updates too aggressive.</li>
+            <li>Using only the clipped expression would also clip updates that are not harmful. The $\min$ is pessimistic: it keeps the normal objective when the update is safe, and switches to the clipped (lower) value when the update tries to go too far. The policy cannot gain extra credit from large probability changes in either direction.
+              <div class="math-block">$$L^\text{CLIP}(\theta) = \mathbb{E}\!\left[\min\!\left(r_t(\theta)\hat{A}_t,\;\text{clip}(r_t(\theta),1-\epsilon,1+\epsilon)\hat{A}_t\right)\right]$$</div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ex 19 -->
+    <div class="ex-block">
+      <h3>Exercise 19 — Rare Rewards and High Variance</h3>
+      <p>Suppose a robot receives reward only when it visits one rare state-action pair $(s^\star, a^\star)$. Otherwise, reward is zero. The REINFORCE estimator is $\hat{g} = \sum_t \nabla_\theta \log \pi_\theta(a_t \mid s_t)\,G_t$.</p>
+      <ol>
+        <li>What happens to $G_t$ for most trajectories?</li>
+        <li>What happens to the gradient estimate for most trajectories?</li>
+        <li>What happens on the rare trajectory that gets reward?</li>
+        <li>Why does this create high variance?</li>
+        <li>Why is exploration especially important in this setting?</li>
+      </ol>
+      <div class="solution">
+        <div class="callout callout-note"><div class="callout-label">Solution</div>
+          <ol>
+            <li>For most trajectories the robot never reaches $(s^\star, a^\star)$, so all rewards are zero and $G_t = 0$.</li>
+            <li>If $G_t = 0$, the gradient contribution $\nabla_\theta \log \pi_\theta(a_t \mid s_t)\cdot G_t = 0$. Most trajectories give no learning signal.</li>
+            <li>On a rare successful trajectory $G_t$ is positive, producing a large nonzero policy gradient update.</li>
+            <li>Most gradient estimates are zero, but a few rare estimates are large. The learning signal is inconsistent and depends heavily on rare lucky trajectories — that is high variance.</li>
+            <li>Exploration is essential because the robot must discover $(s^\star, a^\star)$ before it can learn from it. If the policy never visits that pair, the reward is forever invisible.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end .notes -->
+</main>
+
+<footer>
+  <a href="week2.html">← Back to Week 2 notes</a>
+  <a href="week3.html">Week 3: Advanced Topics →</a>
+</footer>
+
+<script>
+  function toggleSolutions(show) {
+    document.querySelectorAll('.solution').forEach(el => el.classList.toggle('visible', show));
+    document.getElementById('solLabel').textContent = show ? 'Solutions visible' : 'Solutions hidden';
+  }
+</script>
+
+</body>
+</html>
